@@ -1,3 +1,47 @@
 \chapter{Estado da Arte}
 
-Neste capítulo é apresentado o estado da arte relativo ao contexto desta dissertação.
+Neste capítulo é apresentado o estado da arte relativo ao contexto desta dissertação. 
+
+\section{Introdução ao problema}
+
+A plataforma \gls{clav} pode ser divididas em 3 eixos principais:
+
+\begin{enumerate}
+    \item \textbf{Frontend}
+    Responsável pela interação dos utilizadores com plataforma, bem como chamadas à \gls{api}, podendo esta ser de cariz público ou privado, através do acesso a certas funcionalidades da plataforma (por exemplo: listagens de utilizadores, entidades, legislações, etc).
+    
+    \item \textbf{Backend}
+    Desenvolvido em \emph{NodeJS}, este é responsável por satisfazer os serviços requisitados pelo \emph{Frontend}. Inclui toda a lógica da aplicação, como a camada de acesso a dados, leitura e armazenamento de informação.
+    
+    \item \textbf{API de dados}
+    Responsável pela comunicação e gestão de pedidos dos utilizadores da plataforma, sendo que a sua principal função é servir de elo de ligação entre os resultados guardados em base de dados e o \emph{Frontend} disponibilizado aos utilizadores.
+\end{enumerate}
+
+Devido à natureza dos dados presentes na plataforma \gls{clav}, foi necessário proceder a uma correta e estruturada implementação de diversos mecanismos de segurança e proteção contra uso indevido de dados.
+
+\cleardoublepage
+\section{Soluções adoptadas}
+
+De modo a oferecer um nível de segurança adequado à plataforma, foram adotadas várias medidas de segurança, sendo estas explicadas em mais detalhe nas subsecções seguintes.
+
+\subsection{Gestão de utilizadores}
+
+A gestão de utilizadores é feita através da combinação entre o middleware\footnote{Middleware é um software que funciona como intermediário entre dois programas.} designado por \emph{Passport} e a base de dados não-relacional\footnote{Estilo de base de dados livres de esquema, capazes de maior escalabilidade que as base de dados tradiconais.} implementada em \emph{MongoDB}.
+
+Devido à informação sensível que pode ser guardada na mesma, campos como a password são, naturalmente, encriptados recorrendo a técnicas futuramente discutidas.
+
+\subsubsection{Passport}
+
+%\subsubsection{bcrypt}
+
+\subsubsection{Autenticação.Gov}
+
+%\subsubsection{SSL}
+%\subsubsection{TLS}
+
+
+\subsection{Gestão de pedidos}
+\subsubsection{JSON Web Token}
+
+
+\subsection{Autenticação backend}
