@@ -134,13 +134,11 @@ Em suma, o método de autenticação ideal deve implementar ambos estes métodos
 \cleardoublepage
 \subsection{bcrypt}
 
-\subsubsection{Introdução ao bcrypt}
+De modo a solucionar os problemas referidos na secção anterior, foi necessário proceder ao desenvolvimento de uma função criptográfica que não só solucionasse o problema relacionado com ataques via \emph{rainbow tables}, mas também fosse capaz de acompanhar os avanços tecnológicos a nível computacional.
 
-O algoritmo \emph{bcrypt} foi extensivamente testado, sendo o standard da indústria em termos de encriptação de passwords.
+Para tal, Niels Provos e David Mazières desenvolveram a função de \emph{hashing} designada por \textbf{bcrypt}. Esta foi apresentada em 1999 na \gls{usenix}, sendo uma função baseada na cifra \emph{Blowfish}, desenvolvia por Bruce Schneier e apresentada em 1993.
 
-Este standard foi alcançado devido ao facto deste proceder ao \emph{hashing} e \emph{salting} de passwords de forma segura e extremamente eficaz, sendo que esta é capaz de acompanhar o aumento exponencial do poder computacional, de modo a manter o tempo de resolução constante.
-
-%
+Além de incorporar um \emph{salt} para proteger contra ataques via \emph{rainbow tables}, esta foi desenvolvida para ser uma função adaptável, sendo que o número de iterações pode ser incrementado de modo a aumentar o número de ciclos máquina necessários para o cálculo do \emph{hash}. 
 
 \begin{algorithm}
     \caption{Pseudo código do algoritmo \emph{bcrypt}.}
@@ -154,6 +152,62 @@ Este standard foi alcançado devido ao facto deste proceder ao \emph{hashing} e 
     \EndFunction
     \end{algorithmic}
 \end{algorithm}
+
+A combinação destas duas técnicas faz com que, até à data de publicação desta pré-dissertação, o algoritmo \emph{bcrypt} ainda não tenha sido quebrado, sendo que se trata do algoritmo escolhido por sistemas operativos como o \emph{OpenBSD} e \emph{SUSE Linux} para o \emph{hashing} das suas passwords.
+
+Esta fama levou a que o \emph{bcrypt} seja considerado por muitos, o standard da indústria em termos de encriptação de passwords.
+
+\cleardoublepage
+\subsubsection{Funcionamento do bcrypt}
+
+De modo a proporcionar uma forma de aumentar o tempo computacional o algoritmo \emph{bcrypt}, Niels Provos e David Mazières basearam-se na cifra \emph{Blowfish} já existente, criando assim uma versão designada por \emph{Eksblowfish} (\textit{\textbf{Expensive key schedule} Blowfish}).
+
+\begin{algorithm}
+    \caption{Pseudo código do algoritmo \emph{EksBlowfish}.}
+    \begin{algorithmic}[1]
+        \Function{EksBlowfishSetup}{cost, salt, key}
+        \State $state\gets InitState()$
+        \State $state\gets ExpandKey(state, salt, key)$
+        \State \textbf{repeat}($2^{cost}$)
+        \State \indent $state\gets ExpandKey(state, 0, salt)$
+        \State \indent $state\gets ExpandKey(state, 0, key)$
+        \State \textbf{return} state
+    \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+Esta alteração à cifra \emph{Blowfish} não foi feita com o intuito de a tornar criptograficamente mais forte, mas sim alterar a forma como a \emph{key} é calculada.
+
+Tendo em consideração que a \emph{key} é um valor aleatório variável entre 1 e 72 bytes, inclusive, esta alteração torna o cálculo da \emph{key} demoroso a nível computacional (\textbf{Expensive}).
+
+De modo a prolongar o tempo de execução desta função, é aplicada a expansão da \emph{key} $2^{cost}$ vezes. Esta alteração é a maior distinção entre o algoritmo \emph{Blowfish} original e o \emph{Eksblowfish}, sendo a causa do \emph{bcrypt} ser considerado um algoritmo adaptável.
+
+No gráfico seguinte, podemos ver uma relação entre o facto de custo e o tempo de execução do algoritmo \emph{bcrypt}.
+
+\begin{center}
+    \begin{tikzpicture}
+        \begin{axis}[
+            xlabel={Valor do parametro \emph{cost}},
+            ylabel={Tempo de execução},
+            xmin=6, xmax=20,
+            ymin=0, ymax=60,
+            xtick={6,7,8,9,10,11,12,13,14,15,16,17,18,19,20},
+            ytick={0,5,10,15,20,25,30,35,40,45,50,55,60},
+            legend pos=north west,
+            ymajorgrids=true,
+            grid style=dashed,
+        ]
+        \addplot[
+            color=blue,
+            mark=square,
+            ]
+            coordinates {
+            (6,0.003622)(7,0.007590)(8,0.013918)(9,0.028723)(10,0.055023)(11,0.110837)(12,0.226982)(13,0.446507)(14,0.892617)(15,1.778647)(16,3.588397)(17,7.155973)(18,14.572114)(19,28.860461)(20,57.623139)
+            };
+            \legend{Segundos}
+        \end{axis}
+    \end{tikzpicture}
+\end{center}
 
 \cleardoublepage
 \section{Autenticação através do Auth.Gov}
