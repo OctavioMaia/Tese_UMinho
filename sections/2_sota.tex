@@ -20,11 +20,10 @@ A plataforma \gls{clav} pode ser divididas em 3 eixos principais:
 Devido à natureza dos dados presentes na plataforma \gls{clav}, foi necessário proceder a uma correta e estruturada implementação de diversos mecanismos de segurança e proteção contra uso indevido de dados.
 
 \cleardoublepage
-\section{Soluções adoptadas}
+%\section{Soluções adoptadas}
+%De modo a oferecer um nível de segurança adequado à plataforma, foram adotadas várias medidas de segurança, sendo estas explicadas em mais detalhe nas subsecções seguintes.
 
-De modo a oferecer um nível de segurança adequado à plataforma, foram adotadas várias medidas de segurança, sendo estas explicadas em mais detalhe nas subsecções seguintes.
-
-\subsection{Gestão de utilizadores via Passport}
+\section{Gestão de utilizadores}
 
 A gestão de utilizadores é feita através da combinação entre o middleware\footnote{Middleware é um software que funciona como intermediário entre dois programas.} designado por \emph{Passport} e a base de dados não-relacional\footnote{Estilo de base de dados livres de esquema, capazes de maior escalabilidade que as base de dados tradiconais.} implementada em \emph{MongoDB}.
 
@@ -44,59 +43,127 @@ Devido a cada aplicação possuir necessidades diferentes, o \emph{Passport} gua
 De seguida será apresentada a forma como as passwords dos utilizadores estão a ser protegidas.
 
 \cleardoublepage
-\subsubsection{Encriptação de dados}
+\subsection{Introdução à encriptação}
 
 Em qualquer aplicação no mundo real, é impensável guardar dados sensíveis, como passwords, em formato \emph{plain-text}. Daí surgiu a necessidade de proteger informação sensível através de métodos designados por \emph{hashing}\footnote{Uma função hash é um algoritmo que mapeia dados de comprimento variável para dados de comprimento fixo.}.\\
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.75\textwidth]{img/bcrypt/Hashing.png}
-    \caption{Representação de uma função de \emph{hash}.}
+    \caption{Representação de uma função de \emph{hash}. ADICIONAR FONTE}
 \end{figure}
 
-Em geral, o \emph{hashing} é caraterizado como uma operação de sentido único, através da qual se gera um texto único sendo impossível de reverter para o texto original.
-Embora esta noção esteja correta e seja impossível, através de um texto já processado por uma função de \emph{hash}, reconstruir o texto original em questão, este não é infalível.
-
-\vspace{0.5cm}
-\large{\textbf{Problema do \emph{hashing}}}
-
-
-Embora o \emph{hashing} de passwords pareça uma solução segura, rapidamente foi descartado devido a ser extremamente suscetível a ataques baseado em \emph{rainbow tables}, também conhecidos por \emph{ataques de dicionário}.
-
-A essência deste ataque não assenta no facto de calcular em tempo real \emph{hashes} aleatórios, mas sim utilizar valores de hash pré-calculados para toda e qualquer possível combinação de caracteres, utilizando para tal o método \emph{bruteforce}. 
-
-Esta vulnerabilidade foi de tão larga escala que poderia quebrar \emph{99.9\%} de todas as combinações possíveis de 14 caracteres alfanuméricos em 11 minutos (utilizando a \emph{rainbow table} menos extensa, sendo que com tabelas mais extensas esta figura descia consideravelmente).
+Em geral, o \emph{hashing} é caraterizado como uma operação de sentido único, através da qual se gera um resultado único, impossível de reverter para o texto original.
+Embora esta noção esteja correta e seja de facto impossível, através de um texto já processado por uma função de \emph{hash}, reconstruir o texto original em questão, este não é infalível.
 
 \cleardoublepage
-\large{\textbf{A solução}}
+\subsubsection{Vulnerabilidades}
+
+Para exemplificar vulnerabilidades existentes nas funções criptográficas que recorrem apenas ao \emph{hashing} de passwords, vamos recorrer ao algoritmo \textbf{SHA-1}, pertencente à familia de algoritmos \gls{sha}.
+
+O principal problema das funções da família \gls{sha} assenta no facto de que foram desenvolvidas para serem computacionalmente rápidas. A rapidez com que uma função pode calcular \emph{hashes}, tem um impacto imediato e significativo na quão seguro uma password é.
+
+Embora cálculos mais rápidos levem ao desenvolvimento de algoritmos mais eficientes a nível de computação, também abrem portas a ataques \emph{bruteforce}. Atualmente, com o auxilio de \gls{cpu} e \gls{gpu} modernas, é possível calcular milhões, ou até bilhões de \emph{hashes} por segundo.
+
+Outro problema assenta no facto que qualquer função responsável por \emph{hashing}, para o mesmo texto, retorna sempre o mesmo resultado de \emph{hash}, como podemos verificar na tabela seguinte.
+
+\begin{center}
+    \begin{tabular}{ |p{2cm}|p{2cm}|p{8cm}|  }
+        \hline
+        \multicolumn{3}{|c|}{Resultados do algoritmo SHA-1} \\
+        \hline
+        Utilizador & Password & \emph{Hashed} password\\
+        \hline
+        \textcolor{red}{António} & \textcolor{red}{12345} & \textcolor{red}{\textbf{8cb2237d0679ca88db6464eac60da96345513964}}\\
+        Alice & sup3rs3gur4 & 0ce594a80be23686fa95527e219ff162291f80f0\\
+        Manuel & uncrackabl3 & c4f9036ecefde84b5a8dc4296abbab1a6c53be60\\
+        \textcolor{red}{Gustavo} & \textcolor{red}{12345} & \textcolor{red}{\textbf{8cb2237d0679ca88db6464eac60da96345513964}}\\
+        Joana & 1a2b3c4d & b01afc2b077956acc69f99e0b7df1cb70cb01331\\
+        \hline
+    \end{tabular}
+\captionof{table}{Aplicação do algoritmo \emph{SHA-1} a um conjunto de passwords.}\label{tab:sha1} 
+\end{center}
+
+Como exemplificado na Tabela \ref{tab:sha1}, o utilizador \textbf{António} e \textbf{Gustavo} partilham a mesma password, logo o resultado após o \emph{hashing} da mesma é idêntico. 
+
+Embora passwords idênticas sejam extremamente comuns, o facto do \emph{hash} resultante ser idêntico apresenta um fator de risco muito mais elevado do que as passwords serem idênticas, pois estaria a expor um número exorbitante de utilizadores a uma grave falha de segurança.
+
+Porém, o simples acto de \emph{hashing} de passwords não é uma solução segura. Este rapidamente foi descartado devido a ser extremamente suscetível a ataques baseado em \emph{rainbow tables}, também conhecidos por \emph{ataques de dicionário}.
+
+Este ataque tem como base o facto de algoritmos como o \emph{SHA-1} ser extremamente rápido e eficiente, sendo que em vez de calcular em tempo real \emph{hashes} aleatórios, utilizam valores de hash pré-calculados para toda e qualquer possível combinação de caracteres, utilizando para validação o método \emph{bruteforce}.
+
+Esta vulnerabilidade foi de tão larga escala, que poderia quebrar \emph{99.9\%} de todas as combinações possíveis de 14 caracteres alfanuméricos em 11 minutos (utilizando a \emph{rainbow table} menos extensa, sendo que com tabelas mais extensas esta figura descia consideravelmente).
 
 
-A solução para este problema passou por diversificar ainda mais os \emph{hashes} gerados. Para tal foi adicionado um \emph{salt}, um dado aleatório adicionado ao input de uma dada função de \emph{hash} de modo a fazer qualquer password verdadeiramente única.
+%\cleardoublepage
+\subsubsection{Melhorias no processo de hashing}
 
-O método de autenticação ideal deve implementar ambos estes métodos, \emph{hashing} e \emph{salting}.
+De modo a solucionar o problema anterior, é necessário implementar uma função de \emph{hashing} mais lenta, que seja eficaz na proteção de informação e capaz de abrandar, ou evitar possíveis ataques. Também é necessário que esta função seja adaptativa, ou seja, que devido a avanços tecnológicos em hardware esta se possa adaptar para ter um desempenho similar aos níveis atuais.
 
-Um dos métodos mais comuns e seguros da atualidade, é o \emph{bcrypt}, uma implementação que recorre ao \emph{hashing} e \emph{salting}, tornando-a no perfeito candidato para utilização neste projeto.
+De modo a solucionar o problema proveniente de ataques \emph{bruteforce} baseados no uso de \emph{rainbow tables}, foi necessário diversificar ainda mais os \emph{hashes} gerados. Para tal foi adicionado um \emph{salt}, de modo a fazer qualquer password verdadeiramente única.
 
-\vspace{0.5cm}
-\large{\textbf{Encriptação via \emph{bcrypt}}}
-%TODO
+De acordo com a \gls{owasp}, o \emph{salt} é um valor aleatório de tamanho fixo, considerado criptograficamente forte, que é adicionado ao input de uma dada função de \emph{hash}, independentemente deste do input ser ou não único.
+
+Na tabela seguinte podemos verificar a importância de utilizar a técnica de \emph{salting} juntamente com o \emph{hashing} de passwords.
+
+\begin{center}
+    \begin{tabular}{ |p{1.7cm}|p{2cm}|p{1.5cm}|p{8cm}|  }
+        \hline
+        \multicolumn{4}{|c|}{Resultados do algoritmo SHA-1 c/ salting} \\
+        \hline
+        Utilizador & Password & Salt &\emph{Hashed} password + \textbf{salt}\\
+        \hline 
+        \textcolor{red}{António} & \textcolor{red}{12345} & r8ZGQH & c783b62c876b77310818b3b4cc6863ca008f7d10\\
+        Alice & sup3rs3gur4 & yvL9H8 & d68c7166f916b91b66dda685e8eee1af70528933\\
+        Manuel & uncrackabl3 & C4uHRv & 87d8e4e7ae79ab2487133a6513e35cb511687d5a\\
+        \textcolor{red}{Gustavo} & \textcolor{red}{12345} & jKM2Lh & f69e3288fc17c383cab12aa78a725d675610e81a\\
+        Joana & 1a2b3c4d & WNj7Vt & 866038b3d43de9a9b0b49a6ee1ffc6cbf64d3c6d\\
+        \hline
+    \end{tabular}
+\captionof{table}{Aplicação do algoritmo \emph{SHA-1} com auxílio de \emph{salting} a um conjunto de passwords.}\label{tab:sha1_salt} 
+\end{center}
+
+Como exemplificado na Tabela \ref{tab:sha1_salt}, embora o utilizador \textbf{António} e \textbf{Gustavo} partilhem a mesma password, o resultado do \emph{hashing} é diferente.
+
+Facilmente chegamos à conclusão que o \emph{salting} é essencial para manter a segurança de informação importante como passwords, pois um conjunto infinito de passwords idênticas nunca terão o mesmo \emph{hash}.
+
+Embora seja teoricamente possível quebrar este tipo de combinação, esta requer poder computacional exponencialmente maior que um simples ataque \emph{rainbow table}, visto que o \emph{salt} é totalmente aleatório, tornando qualquer ataque inviável.
+
+Em suma, o método de autenticação ideal deve implementar ambos estes métodos, \emph{hashing} e \emph{salting}, sendo que um dos métodos mais comuns e seguros da atualidade, é o \emph{bcrypt}, tornando-a no perfeito candidato para utilização neste projeto.
 
 \cleardoublepage
+\subsection{bcrypt}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\textwidth]{img/bcrypt/bcrypt-algo.png}
+\subsubsection{Introdução ao bcrypt}
+
+O algoritmo \emph{bcrypt} foi extensivamente testado, sendo o standard da indústria em termos de encriptação de passwords.
+
+Este standard foi alcançado devido ao facto deste proceder ao \emph{hashing} e \emph{salting} de passwords de forma segura e extremamente eficaz, sendo que esta é capaz de acompanhar o aumento exponencial do poder computacional, de modo a manter o tempo de resolução constante.
+
+%
+
+\begin{algorithm}
     \caption{Pseudo código do algoritmo \emph{bcrypt}.}
-\end{figure}
+    \begin{algorithmic}[1]
+        \Function{bcrypt}{cost, salt, pwd}
+        \State $state\gets EksBlowfishSetup(cost,salt,key)$
+        \State $ctext\gets OrpheanBeholderScryDoubt$
+        \State \textbf{repeat}(64)
+        \State \indent $ctext\gets EncryptECB(state, ctex)$
+        \State \textbf{return} Concatenate(cost, salt, ctext)
+    \EndFunction
+    \end{algorithmic}
+\end{algorithm}
 
-\subsection{Autenticação através do Auth.Gov}
+\cleardoublepage
+\section{Autenticação através do Auth.Gov}
 
-\subsubsection{SSL}
-\subsubsection{TLS}
-
-
-\subsection{Autenticação de pedidos via API}
-\subsubsection{JSON Web Token}
+\subsection{SSL}
+\subsection{TLS}
 
 
-\subsection{Autenticação backend}
+\section{Autenticação de pedidos via API}
+\subsection{JSON Web Token}
+
+
+\section{Autenticação backend}
