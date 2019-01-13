@@ -319,14 +319,115 @@ Felizmente, tal aplicação de hardware pare este efeito ainda não foi detetada
 
 No âmbito do projeto \gls{clav} é disponibilizada uma \gls{api} pública de modo a serem feitas \emph{queries} à base de dados.
 
-De modo a estas chamadas, bem como controlar uso indevido da mesmas, foi necessário implementar autenticação e controlo através de \gls{jwt}\footnote{Mais informação em https://jwt.io}.
+De modo a estas chamadas, bem como controlar uso indevido da mesmas, foi necessário implementar autenticação e controlo através de \gls{jwt}\footnote{Mais informação em \url{https://jwt.io}}.
 
 A essência do \gls{jwt} assenta no facto do token ser ou não válido, ou seja, se este já expirou ou foi revogado. A implementação deste token foi feita de forma a ser possível monitorizar quem está a fazer chamadas à \gls{api}, podendo a qualquer altura revogar autorização para tal, bem como a auto-revogação após 30 dias.
 
-Estas regras ajudam a evitar problemas, tais como ataques à \gls{api} através de sucessivas chamadas num curto espaço de tempo, o que provoca uma sobrecarga no sistema.
+Estes cuidados ajudam a evitar problemas, tais como ataques à \gls{api} através de sucessivas chamadas num curto espaço de tempo, o que provoca uma sobrecarga no sistema.
 
 \subsection{JSON Web Token}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/jwt/jwtlogo.png}
+    \caption{Logótipo do \emph{JSON Web Token}. ADICIONAR FONTE}
+\end{figure}
 
+Mas o que define um \gls{jwt}? Um \gls{jwt} é nada mais que um \emph{standard RFC 7519}\footnote{Mais informação em \url{https://tools.ietf.org/html/rfc7519}} desenvolvido para a troca de pedidos em ambientes cujo espaço é limitado. 
+
+Atualmente, este é utilizado nos frameworks web mais populares, devido ao seu tamanho compacto, simplicidade e usabilidade, tornando-o no perfeito candidato para diversas aplicações.
+
+\cleardoublepage
+\subsubsection{Funcionamento do JSON Web Token}
+
+Um \emph{JSON Web token} é composto por 3 elementos distintos (quebras de linha inseridas para melhorar a leitura), separados por um ponto (\textbf{ . }) entre cada elemento:
+
+\begin{center}
+    \textbf{\textcolor{red}{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9}.\\
+    \textcolor{green}{eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik\\9jdMOhdmlvIE1haWEiLCJudW1BbHVubyI6NzEzNjl9}.\\
+    \textcolor{blue}{SneQiuAGUW9aTpxlNNbMkEoYNj7v4-Sw\_5jl134-hosk}}
+\end{center}
+
+Embora seja impossível retirar alguma informação útil do \emph{token} exemplificado anteriormente, este contem informação extremamente útil, tendo sido gerado através da seguinte informação:
+
+\begin{itemize}
+    \item Header (representado a vermelho).
+    \begin{verbatim}
+    {
+      "alg": "HS256",
+      "typ": "JWT"
+    }
+    \end{verbatim}
+    
+    Todos os \emph{JSON Web Token} possuem um header. Este elemento estabelece qual o algoritmo utilizado, se o \gls{jwt} foi assinado ou encriptado e por norma, como proceder ao parse do resto do \gls{jwt}.
+    
+    O único atributo obrigatório num \gls{jwt} é o \emph{alg}, sendo que em \gls{jwt} que não foram encriptados este valor é \textbf{none}, sendo que neste exemplo foi utilizada a encriptação \textbf{HS256}, ou seja, \gls{hmac} com o auxílio de \gls{sha256}.
+    
+    Existem tambem atributos opcionais, tais como \emph{typ}, cuja função é distinguir entre o \gls{jwt} e outros tipos de dados que possam ser transmitidos no mesmo formato\footnote{Tipos de dados transmissíveis: \url{http://www.iana.org/assignments/media-types/media-types.xhtml}}, sendo que neste exemplo é transmitido um \emph{JWT} e \emph{cty}, que apenas é utilizado quando existem aninhamento de \gls{jwt} dentro de outro(s) \gls{jwt}.
+    
+    Após o uso do algoritmo \textbf{HS256}, a informação acima representada é transcrita sobre a forma da seguinte string:
+    
+    \begin{center}
+        \textbf{\emph{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9}}
+    \end{center}
+    
+    \newpage
+    \item Payload (representado a verde).
+    \begin{verbatim}
+    {
+      "sub": "1234567890",
+      "name": "Octavio Maia",
+      "numAluno": 71369
+    }
+    \end{verbatim}
+    
+    O payload é o elemento responsável pelo armazenamento de todo e qualquer dado do utilizador. Como o header, este elemento segue o formato \emph{JSON}, embora que todos os atributos presentes no payload sejam de natureza opcional, ao contrário do header que possui pelo menos um atributo de cariz obrigatório.
+    
+    De acordo com a especificação do payload, existem 7 atributos registados, sendo que neste exemplo apenas existe um, designado por \emph{sub}. Este atributo contem informação sobre quem se trata a informação contida neste \gls{jwt}, sendo que para tal efeito, este atributo é de cariz único na aplicação em questão.
+    
+    Os atributos designados por \emph{name} e \emph{numAluno} são designado por atributos não registados, podendo conter qualquer tipo de informação representável sobre a forma de string.
+    
+    No âmbito do projeto \gls{clav} são utilizados outros atributos registados, sendo o de maior importância o atributo \emph{exp}, cuja função é representar uma data específica, seguindo o formato \emph{"seconds since epoch"}\footnote{Definido pela \gls{posix} em \url{http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html##tag_04_15}}, após a qual o \gls{jwt} é considerado inválido.
+    
+    A informação acima representada anteriormente é transcrita sobre a forma da seguinte string:
+    
+    \begin{center}
+        \textbf{\emph{eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik\\9jdMOhdmlvIE1haWEiLCJudW1BbHVubyI6NzEzNjl9}}
+    \end{center}
+    
+    \newpage
+    \item Assinatura (representado a azul).
+    \begin{verbatim}
+    HMACSHA256(
+      base64UrlEncode(header) + "." +
+      base64UrlEncode(payload),
+      secretKey  
+    )
+    \end{verbatim}
+    
+    Embora a definição de \gls{jwt} apenas abranja os dois elementos previamente estudados, o terceiro elemento apenas tem como função a desencriptação do \gls{jwt} para efeitos de \emph{parsing}.
+    
+    Por norma é utilizado uma variante do algoritmo \emph{Base64}, designada por \emph{Base64-URL}. Para encriptar a assinatura, são concatenadas 3 strings que foram sujeitas ao codificação via \emph{Base64-URL}.
+    
+    \begin{verbatim}
+        [Base64-URL header].[Base64-URL payload].[secretKey]
+    \end{verbatim}
+    
+    O resultado desta concatenação e posterior encriptação via \textbf{HS256} é a seguinte string:
+    
+    \begin{center}
+        \textbf{\emph{SneQiuAGUW9aTpxlNNbMkEoYNj7v4-Sw\_5jl134-hosk}}
+    \end{center}
+\end{itemize}
+
+\cleardoublepage
+\subsubsection{Implementação do JSON Web Token}
+
+Numa fase inicial do projeto \gls{clav} 
+
+\cleardoublepage
+\subsubsection{Falhas do JSON Web Token}
+
+\cleardoublepage
 \section{Autenticação backend}
 %checkLevel? será isto?
