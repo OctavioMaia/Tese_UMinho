@@ -153,11 +153,27 @@ Além de incorporar um \emph{salt} para proteger contra ataques via \emph{rainbo
     \end{algorithmic}
 \end{algorithm}
 
+Através do pseudo código acima descrito, é possível verificar que o algoritmo \emph{bcrypt} devolve uma string composta pelo custo, \emph{salt} e o hash da password.
+
+Utilizando como exemplo a string "octavio" com um fator de custo 12, o algoritmo \emph{bcrypt} retorna o seguinte:
+
+\begin{center}
+    \textbf{\textcolor{red}{\$2y\$}\textcolor{green}{12\$}\textcolor{blue}{au1FX9q7Ju67N3INnoBo3uYqKrkYRLPFH1}\textcolor{orange}{.ycZ4GU9qHuo6c2FaN6}}
+\end{center} 
+
+Esta string pode ser dividida em 4 secções:
+
+\begin{itemize}
+    \item Versão do \emph{bcrypt} utilizada (representada a vermelho).
+    \item Fator de custo, valor entre 1 e 31 (representada a verde).
+    \item String correspondente ao \emph{salt} (representada a azul).
+    \item Password após \emph{hash} da mesma(representada a laranja).
+\end{itemize}
+
 A combinação destas duas técnicas faz com que, até à data de publicação desta pré-dissertação, o algoritmo \emph{bcrypt} ainda não tenha sido quebrado, sendo que se trata do algoritmo escolhido por sistemas operativos como o \emph{OpenBSD} e \emph{SUSE Linux} para o \emph{hashing} das suas passwords.
 
 Esta fama levou a que o \emph{bcrypt} seja considerado por muitos, o standard da indústria em termos de encriptação de passwords.
 
-\cleardoublepage
 \subsubsection{Funcionamento do bcrypt}
 
 De modo a proporcionar uma forma de aumentar o tempo computacional o algoritmo \emph{bcrypt}, Niels Provos e David Mazières basearam-se na cifra \emph{Blowfish} já existente, criando assim uma versão designada por \emph{Eksblowfish} (\textit{\textbf{Expensive key schedule} Blowfish}).
@@ -182,7 +198,7 @@ Tendo em consideração que a \emph{key} é um valor aleatório variável entre 
 
 De modo a prolongar o tempo de execução desta função, é aplicada a expansão da \emph{key} $2^{cost}$ vezes. Esta alteração é a maior distinção entre o algoritmo \emph{Blowfish} original e o \emph{Eksblowfish}, sendo a causa do \emph{bcrypt} ser considerado um algoritmo adaptável.
 
-No gráfico seguinte, podemos ver uma relação entre o facto de custo e o tempo de execução do algoritmo \emph{bcrypt}.
+No gráfico seguinte, podemos ver uma relação entre o factor de custo e o tempo de execução do algoritmo \emph{bcrypt}. \textbf{(teste efetuado com processador Intel Core i7-4770K 4c/8t)}
 
 \begin{center}
     \begin{tikzpicture}
@@ -210,14 +226,107 @@ No gráfico seguinte, podemos ver uma relação entre o facto de custo e o tempo
 \end{center}
 
 \cleardoublepage
-\section{Autenticação através do Auth.Gov}
+\subsubsection{bcrypt no mundo real}
 
-\subsection{SSL}
-\subsection{TLS}
+Como foi mencionado nas secções prévias, um dos factos de o \emph{bcrypt} ainda ser utilizado deve-se não só à sua segurança, mas ao facto de acompanhar as evoluções tecnológicas a nível de processamento.
 
+Quando foi originalmente lançado em 1999, devido ao tempo de execução do algoritmo \emph{bcrypt} ser adaptável, começou por ser utilizado um fator de custo de 6, pois este era o valor para o qual resultava um tempo de execução de aproximadamente 250ms (considerado por muitos o \emph{standard}).
 
+Devido a enormes avanços tecnológicos, hoje em dia um fator de custo 6 na máquina previamente descrita leva a um tempo de execução de apenas 3.6ms, ou seja, aproximadamente 70 vezes menor do que em 1999.
+
+Para combater esta crescente incessável de poder computacional, o fator de custo deve ser ajustado de acordo com o hardware atual, sendo que hoje em dia o fator de custo mais comum é de 12 a 14, o que nosso teste levou a um tempo de execução entre 226ms e 890ms.
+
+De modo a exemplificar a importância do fator de custo, vamos imaginar o seguinte cenário:
+
+\begin{itemize}
+    \item Aplicação com 1000 utilizadores, cujas passwords estão contida num dos conjuntos em baixo especificados.
+    \item Conjunto de passwords mais usadas:
+    \begin{enumerate}
+        \item 100 passwords.
+        \item 1000 passwords.
+        \item 10000 passwords.
+    \end{enumerate}
+    \item É permitido tentativas de autenticação ilimitadas, eliminando assim qualquer defesa contra ataques \emph{bruteforce}.
+\end{itemize}
+
+Quanto tempo demoraria a um atacante, com um processador idêntico ao descrito anteriormente, testar todas as passwords para os 1000 utilizadores?
+
+\begin{center}
+    \begin{tabular}{ |p{2.5cm}|p{3cm}|p{3cm}|p{3cm}|  }
+        \hline
+        \multicolumn{4}{|c|}{Tempo necessário para testar todas as passwords para os 1000 utilizadores.} \\
+        \hline
+        Fator de custo & 100 passwords & 1000 passwords & 10000 passwords\\
+        \hline 
+        6 & 6 minutos & 1 hora & 10 horas\\
+        7 & 12 minutos & 2 horas & 21 horas\\
+        8 & 23 minutos & 4 horas & 2 dias\\
+        9 & 48 minutos & 8 horas & 3 dias\\
+        10 & 92 minutos & 15 horas & 6 dias\\
+        11 & 3 horas & 30 horas & 13 dias\\
+        12 & 6 horas & 3 dias & 1 mês\\
+        13 & 12 horas & 5 dias & 2 meses\\
+        14 & 1 dia & 10 dias & 3 meses\\
+        15 & 2 dias & 21 dias & 7 meses\\
+        16 & 4 dias & 1 mês & 1 ano\\
+        17 & 1 semana & 3 meses & 2 anos\\
+        18 & 2 semanas & 6 meses & 5 anos\\
+        19 & 1 mês & 11 meses & 9 anos\\
+        20 & 2 meses & 2 anos & 18 anos\\
+        \hline
+    \end{tabular}
+\captionof{table}{Tempo necessário para testar combinações de passwords para 1000 utilizadores.}\label{tab:bcrypt_bruteforce} 
+\end{center}
+
+Facilmente percebemos que fatores de custo como 10 são demasiado baixos para a atualidade, sendo imperativo a escolha de um fator de custo equilibrado. Outro facto a ter em consideração é este teste ter sido feito com um processador \emph{mainstream}, sendo que o mesmo se encontra 4 gerações atrasado em comparação com a atual 9ª geração de processadores Intel.
+
+Outro problema que tem ganho tração nos últimos anos, é o aparecimento de soluções especializadas sobre a forma de \gls{gpu}, \gls{fpga} e \gls{asic}, capazes de poder computacional extremamente superior, quando comparados com o \gls{cpu} utilizado para os testes anteriores.
+
+Um \gls{fpga} é um circuito integrado que tem a possibilidade de ser reprogramado através de \emph{bitstreams}, de modo a ser utilizado em aplicações diferentes, como por exemplo, cálculos de hash baseados no algoritmo SHA-1, SHA-256, etc. Enquanto que um \gls{asic}, embora também seja um circuito integrado, apenas consegue fazer uma função e não pode ser reprogramado, no entanto oferece performance muito superior a um \gls{fpga}.
+
+Na tabela seguinte exploramos a performance em hashes por segundo (H/s) entre \gls{cpu}, \gls{gpu} e \gls{fpga} relativamente ao algoritmo \emph{bcrypt}.
+
+\begin{center}
+    \begin{tabular}{ |p{1cm}|p{2.5cm}|p{2cm}|p{2cm}|p{1.75cm}|p{0.9cm}|  }
+        \hline
+        \multicolumn{6}{|c|}{Cálculo de hashes por segundo (H/s) em diverso hardware.} \\
+        \hline
+        Tipo & Modelo & Custo 6 & Custo 12 & Consumo & Preço\\
+        \hline
+        CPU & Xeon E3-1240 & 6210 H/s & 50 H/s& 300W & 262\$\\
+        GPU & GTX 750Ti & 1920 H/s& 15 H/s& 300W & 120\$\\
+        FPGA & zedboard & 6511 H/s & 51.95 H/s& 4.2W & 319\$\\
+        FPGA & Virtex-7 & 51437 H/s& 410.4 H/s& 20W & 3495\$\\
+        \hline
+    \end{tabular}
+\captionof{table}{Comparação entre diverso hardware no cálculo de hashes para diversos fatores de custo.}\label{tab:bcrypt_hashrate} 
+\end{center}
+
+Mais uma vez é possível identificar outro um problema que não foi previamente considerado: como ajustar o fator de custo para este tipo de hardware especializado, como por exemplo \gls{fpga} e \gls{asic}?
+
+Infelizmente a resposta é que este ajuste é deveras impossível. O simples aumento do fator de custo é impensável, pois iria implicar tempos exponenciais de computação em \gls{cpu} mainstream.
+
+Felizmente, tal aplicação de hardware pare este efeito ainda não foi detetada no mundo real e não aparenta qualquer problema de momento.
+
+%\cleardoublepage
+%\section{Autenticação através do Auth.Gov}
+
+%\subsection{SAML 2.0}
+%\subsection{SSL/TLS}
+
+\cleardoublepage
 \section{Autenticação de pedidos via API}
+
+No âmbito do projeto \gls{clav} é disponibilizada uma \gls{api} pública de modo a serem feitas \emph{queries} à base de dados.
+
+De modo a estas chamadas, bem como controlar uso indevido da mesmas, foi necessário implementar autenticação e controlo através de \gls{jwt}\footnote{Mais informação em https://jwt.io}.
+
+A essência do \gls{jwt} assenta no facto do token ser ou não válido, ou seja, se este já expirou ou foi revogado. A implementação deste token foi feita de forma a ser possível monitorizar quem está a fazer chamadas à \gls{api}, podendo a qualquer altura revogar autorização para tal, bem como a auto-revogação após 30 dias.
+
+Estas regras ajudam a evitar problemas, tais como ataques à \gls{api} através de sucessivas chamadas num curto espaço de tempo, o que provoca uma sobrecarga no sistema.
+
 \subsection{JSON Web Token}
 
 
 \section{Autenticação backend}
+%checkLevel? será isto?
