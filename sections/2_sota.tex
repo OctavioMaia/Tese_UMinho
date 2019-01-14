@@ -100,7 +100,7 @@ Esta vulnerabilidade foi de tão larga escala, que poderia quebrar \emph{99.9\%}
 
 De modo a solucionar o problema anterior, é necessário implementar uma função de \emph{hashing} mais lenta, que seja eficaz na proteção de informação e capaz de abrandar, ou evitar possíveis ataques. Também é necessário que esta função seja adaptativa, ou seja, que devido a avanços tecnológicos em hardware esta se possa adaptar para ter um desempenho similar aos níveis atuais.
 
-De modo a solucionar o problema proveniente de ataques \emph{bruteforce} baseados no uso de \emph{rainbow tables}, foi necessário diversificar ainda mais os \emph{hashes} gerados. Para tal foi adicionado um \emph{salt}, de modo a fazer qualquer password verdadeiramente única.
+De modo a solucionar o problema proveniente de ataques \emph{bruteforce} baseados no uso de \emph{rainbow tables}, foi necessário diversificar ainda mais os \emph{hashes} gerados. Para tal foi adicionado um \emph{salt}\cite{sriramya2015providing}, de modo a fazer qualquer password verdadeiramente única.
 
 De acordo com a \gls{owasp}, o \emph{salt} é um valor aleatório de tamanho fixo, considerado criptograficamente forte, que é adicionado ao input de uma dada função de \emph{hash}, independentemente deste do input ser ou não único.
 
@@ -129,14 +129,14 @@ Facilmente chegamos à conclusão que o \emph{salting} é essencial para manter 
 
 Embora seja teoricamente possível quebrar este tipo de combinação, esta requer poder computacional exponencialmente maior que um simples ataque \emph{rainbow table}, visto que o \emph{salt} é totalmente aleatório, tornando qualquer ataque inviável.
 
-Em suma, o método de autenticação ideal deve implementar ambos estes métodos, \emph{hashing} e \emph{salting}, sendo que um dos métodos mais comuns e seguros da atualidade, é o \emph{bcrypt}, tornando-a no perfeito candidato para utilização neste projeto.
+Em suma, o método de autenticação ideal deve implementar ambos estes métodos\cite{contini2015method}, \emph{hashing} e \emph{salting}, sendo que um dos métodos mais comuns e seguros da atualidade, é o \emph{bcrypt}, tornando-a no perfeito candidato para utilização neste projeto.
 
 \cleardoublepage
 \subsection{bcrypt}
 
 De modo a solucionar os problemas referidos na secção anterior, foi necessário proceder ao desenvolvimento de uma função criptográfica que não só solucionasse o problema relacionado com ataques via \emph{rainbow tables}, mas também fosse capaz de acompanhar os avanços tecnológicos a nível computacional.
 
-Para tal, Niels Provos e David Mazières desenvolveram a função de \emph{hashing} designada por \textbf{bcrypt}. Esta foi apresentada em 1999 na \gls{usenix}, sendo uma função baseada na cifra \emph{Blowfish}, desenvolvia por Bruce Schneier e apresentada em 1993.
+Para tal, Niels Provos e David Mazières desenvolveram a função de \emph{hashing} designada por \textbf{bcrypt}\cite{provos1999future}. Esta foi apresentada em 1999 na \gls{usenix}, sendo uma função baseada na cifra \emph{Blowfish}, desenvolvia por Bruce Schneier e apresentada em 1993.
 
 Além de incorporar um \emph{salt} para proteger contra ataques via \emph{rainbow tables}, esta foi desenvolvida para ser uma função adaptável, sendo que o número de iterações pode ser incrementado de modo a aumentar o número de ciclos máquina necessários para o cálculo do \emph{hash}. 
 
@@ -280,11 +280,11 @@ Quanto tempo demoraria a um atacante, com um processador idêntico ao descrito a
 
 Facilmente percebemos que fatores de custo como 10 são demasiado baixos para a atualidade, sendo imperativo a escolha de um fator de custo equilibrado. Outro facto a ter em consideração é este teste ter sido feito com um processador \emph{mainstream}, sendo que o mesmo se encontra 4 gerações atrasado em comparação com a atual 9ª geração de processadores Intel.
 
-Outro problema que tem ganho tração nos últimos anos, é o aparecimento de soluções especializadas sobre a forma de \gls{gpu}, \gls{fpga} e \gls{asic}, capazes de poder computacional extremamente superior, quando comparados com o \gls{cpu} utilizado para os testes anteriores.
+Outro problema que tem ganho tração nos últimos anos, é o aparecimento de soluções especializadas sobre a forma de \gls{gpu}, \gls{fpga}\cite{wiemer2014high}\cite{malvoni2014your} e \gls{asic}, capazes de poder computacional extremamente superior, quando comparados com o \gls{cpu} utilizado para os testes anteriores.
 
 Um \gls{fpga} é um circuito integrado que tem a possibilidade de ser reprogramado através de \emph{bitstreams}, de modo a ser utilizado em aplicações diferentes, como por exemplo, cálculos de hash baseados no algoritmo SHA-1, SHA-256, etc. Enquanto que um \gls{asic}, embora também seja um circuito integrado, apenas consegue fazer uma função e não pode ser reprogramado, no entanto oferece performance muito superior a um \gls{fpga}.
 
-Na tabela seguinte exploramos a performance em hashes por segundo (H/s) entre \gls{cpu}, \gls{gpu} e \gls{fpga} relativamente ao algoritmo \emph{bcrypt}.
+Na tabela seguinte exploramos a performance em hashes por segundo (H/s) entre \gls{cpu}\footnote{\gls{cpu} fabricado pela Intel, desenvolvido na arquitetura \emph{Sandy Bridge}.}, \gls{gpu}\footnote{\gls{gpu} fabricada pela NVIDIA, desenvolvida na arquitetura \emph{Maxwell}.} e \gls{fpga}\footnote{Ambos os \gls{fpga} utilizados para comparação são desenvolvidos pela Xilinx.} relativamente ao algoritmo \emph{bcrypt}.
 
 \begin{center}
     \begin{tabular}{ |p{1cm}|p{2.5cm}|p{2cm}|p{2cm}|p{1.75cm}|p{0.9cm}|  }
@@ -299,7 +299,7 @@ Na tabela seguinte exploramos a performance em hashes por segundo (H/s) entre \g
         FPGA & Virtex-7 & 51437 H/s& 410.4 H/s& 20W & 3495\$\\
         \hline
     \end{tabular}
-\captionof{table}{Comparação entre diverso hardware no cálculo de hashes para diversos fatores de custo.}\label{tab:bcrypt_hashrate} 
+\captionof{table}{Comparação entre hardware no cálculo de H/s, eficiência e custo.\cite{wiemer2014high}}\label{tab:bcrypt_hashrate} 
 \end{center}
 
 Mais uma vez é possível identificar outro um problema que não foi previamente considerado: como ajustar o fator de custo para este tipo de hardware especializado, como por exemplo \gls{fpga} e \gls{asic}?
@@ -416,10 +416,68 @@ Em suma, o armazenamento de sessões em base de dados possui todas as qualidades
 \cleardoublepage
 \section{Autenticação através do Auth.Gov}
 
-Embora ainda nao tenha implementado isto, falo sobre o que li?
+O Autenticação.Gov surge da necessidade de identificação unívoca de um utilizador perante sítios na Web. Cabe a esta solução o processo de autenticação e o fornecimento dos atributos do utilizador necessários a que cada entidade possa efetuar a identificação do utilizador.
 
-\subsection{SAML 2.0}
-\subsection{SSL/TLS}
+O Autenticação.Gov, em conjunto com o \gls{cc}, também permite fazer uso da funcionalidade de Federação de Identidades da Plataforma de Interoperabilidade da Administração Pública para a identificação sectorial de um Cidadão, isto é, a obtenção dos seus identificadores junto das entidades participantes da iniciativa do Cartão de Cidadão. É também responsável pela gestão dos vários fornecedores de atributos disponíveis e possui uma estreita ligação com a infraestrutura de chave pública do Cartão de Cidadão (\gls{pki}), com o intuito de manter elevados níveis de segurança e privacidade no processo de autenticação e identificação.
+
+Através do Autenticação.Gov é possível a criação de credenciais comuns a todos os sites da Administração Pública, assegurando que o utilizador se necessita de autenticar apenas uma única vez para executar um ou vários serviços que podem ser iniciados em portais transversais (como o Portal do Cidadão ou o Portal da Empresa).
+
+Permite também proceder à autenticação de um utilizador com recursos a outros certificados digitais que não o do Cartão de Cidadão, possibilitando e alargando o leque de autenticação disponível para as Entidades que pretendam delegar a autenticação nesta componente.
+
+Em seguida podemos verificar a quantidade de utilizadores únicos e autenticações realizadas com o auxílio da plataforma \emph{Autenticação.Gov}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/authgov/authgovusage.png}
+    \caption{Evolução do número de autenticações realizadas e utilizadores únicos baseados na plataforma \emph{Autenticação.Gov}.\cite{authGovStats}}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/authgov/authAnos.png}
+    \caption{Representação do número total de autenticações realizados com a plataforma \emph{Autenticação.Gov}.\cite{authGovStats}}
+\end{figure}
+
+Relativamente ao âmbito do projeto \gls{clav} irá ser implementada a autenticação através dos seguintes meios de autenticação:
+
+\begin{itemize}
+    \item Cartão de Cidadão (\gls{cc})
+    
+    A utilização do Cartão de Cidadão como meio de autenticação representa mais de 50\% de todos as autenticações realizadas na plataforma \emph{Autenticação.Gov}.
+    
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.5\textwidth]{img/authgov/authCC.png}
+        \caption{Evolução do número de Autenticações realizadas através do Cartão de Cidadão.\cite{authGovStats}}
+    \end{figure}
+    
+    \item \gls{cmd}
+    
+    Com a crescente adesão a serviços de autenticação baseadas em \emph{smartphones}, a utilização da Chave Móvel Digital tem vindo a ganhar tração cada vez maior nos últimos anos, provando ser uma alternativa complementar, bem como viável à utilização do Cartão de Cidadão como meio de autenticação primária.
+    
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.45\textwidth]{img/authgov/authCMD.png}
+        \caption{Evolução do número de Autenticações realizadas através da Chave Móvel Digital.\cite{authGovStats}}
+    \end{figure}
+\end{itemize}
+
+\subsection{Funcionamento do Autenticação.Gov}
+
+De acordo com o manual de Integração do \emph{Autenticação.Gov}\cite{manualAuthGov}
+
+No diagrama acima identificam-se as seguintes interações:
+1. O utilizador pretende aceder à área privada do portal de uma entidade, na qual é necessário que comprove a sua identidade;
+2. O portal da entidade delega a autenticação e redireciona o utilizador para o Autenticação.Gov, juntamente com um pedido de autenticação assinado digitalmente;
+3. O Autenticação.Gov valida o pedido de autenticação recebido e solicita a autenticação do utilizador com recurso ao seu Cartão de Cidadão pedindo a
+ 9
+ inserção do seu PIN de autenticação. Durante este processo, o Autenticação.Gov efetua as seguintes operações internas:
+a) Valida as credenciais do utilizador com recurso à PKI do Cartão de Cidadão via OCSP;
+b) Obtém atributos que sejam solicitados pelo portal da entidade junto dos vários fornecedores de atributos qualificados. Esta operação é efetuada via Plataforma de Interoperabilidade. Este processo pode incluir a obtenção de dados da Federação de Identidades ou de outras Entidades.
+4. A identificação e atributos do utilizador são autenticadas e assinados digitalmente pelo Autenticação.Gov, após o que redireciona o utilizador de volta ao portal da entidade original. Cabe à entidade a validação das credenciais do Autenticação.Gov e utilização dos atributos do cidadão.
+
+\subsubsection{SAML 2.0}
+\subsubsection{SSL/TLS}
 
 \cleardoublepage
 \section{Autenticação de pedidos via API}
@@ -440,7 +498,7 @@ Estes cuidados ajudam a evitar problemas, tais como ataques à \gls{api} atravé
     \caption{Logótipo do \emph{JSON Web Token}. \cite{jwtLogo}}
 \end{figure}
 
-Mas o que define um \gls{jwt}? Um \gls{jwt} é nada mais que um \emph{standard RFC 7519}\footnote{Mais informação em \url{https://tools.ietf.org/html/rfc7519}} desenvolvido para a troca de pedidos em ambientes cujo espaço é limitado. 
+Mas o que define um \gls{jwt}? Um \gls{jwt} é nada mais que um \emph{standard RFC 7519}\cite{jones2015json}\cite{peyrott2016jwt}\footnote{Mais informação em \url{https://tools.ietf.org/html/rfc7519}} desenvolvido para a troca de pedidos em ambientes cujo espaço é limitado. 
 
 Atualmente, este é utilizado nos frameworks web mais populares, devido ao seu tamanho compacto, simplicidade e usabilidade, tornando-o no perfeito candidato para diversas aplicações.
 
@@ -527,10 +585,8 @@ Embora seja impossível retirar alguma informação útil do \emph{token} exempl
     \end{center}
 \end{itemize}
 
-\cleardoublepage
-\subsubsection{Vulnerabilidades do JSON Web Token}
-
-TODO
+%\cleardoublepage
+%\subsubsection{Vulnerabilidades do JSON Web Token}
 
 \cleardoublepage
 \subsection{Autenticação de pedidos à API}
