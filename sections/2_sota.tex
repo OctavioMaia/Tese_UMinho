@@ -464,20 +464,64 @@ Relativamente ao âmbito do projeto \gls{clav} irá ser implementada a autentica
 
 \subsection{Funcionamento do Autenticação.Gov}
 
-De acordo com o manual de Integração do \emph{Autenticação.Gov}\cite{manualAuthGov}
+De acordo com o manual de Integração do \emph{Autenticação.Gov} providenciado pela \gls{ama}, existem 4 interações\cite{manualAuthGov} entre o \emph{Autenticação.Gov} e a entidade/serviço a aceder:
 
-No diagrama acima identificam-se as seguintes interações:
-1. O utilizador pretende aceder à área privada do portal de uma entidade, na qual é necessário que comprove a sua identidade;
-2. O portal da entidade delega a autenticação e redireciona o utilizador para o Autenticação.Gov, juntamente com um pedido de autenticação assinado digitalmente;
-3. O Autenticação.Gov valida o pedido de autenticação recebido e solicita a autenticação do utilizador com recurso ao seu Cartão de Cidadão pedindo a
- 9
- inserção do seu PIN de autenticação. Durante este processo, o Autenticação.Gov efetua as seguintes operações internas:
-a) Valida as credenciais do utilizador com recurso à PKI do Cartão de Cidadão via OCSP;
-b) Obtém atributos que sejam solicitados pelo portal da entidade junto dos vários fornecedores de atributos qualificados. Esta operação é efetuada via Plataforma de Interoperabilidade. Este processo pode incluir a obtenção de dados da Federação de Identidades ou de outras Entidades.
-4. A identificação e atributos do utilizador são autenticadas e assinados digitalmente pelo Autenticação.Gov, após o que redireciona o utilizador de volta ao portal da entidade original. Cabe à entidade a validação das credenciais do Autenticação.Gov e utilização dos atributos do cidadão.
+\begin{enumerate}
+    \item O utilizador pretende aceder à área privada do portal de uma entidade, na qual é necessário que comprove a sua identidade;
+    \item O portal da entidade delega a autenticação e redireciona o utilizador para o Auten-ticação.Gov, juntamente com um pedido de autenticação assinado digitalmente;
+    \item O Autenticação.Gov valida o pedido de autenticação recebido e solicita a autenticação do utilizador com recurso ao seu Cartão de Cidadão pedindo a inserção do seu PIN de autenticação. Durante este processo, o Autenticação.Gov efetua as seguintes operações internas:
+    \begin{itemize}
+        \item Valida as credenciais do utilizador com recurso à PKI do Cartão de Cidadão via \gls{ocsp}.
+        \item Obtém atributos que sejam solicitados pelo portal da entidade junto dos vários fornecedores de atributos qualificados. Esta operação é efetuada via Plataforma de Interoperabilidade. Este processo pode incluir a obtenção de dados da Fe-deração de Identidades ou de outras Entidades.
+    \end{itemize}
+    \item A identificação e atributos do utilizador são autenticadas e assinados digitalmente pelo Autenticação.Gov, após o que redireciona o utilizador de volta ao portal da entidade original. Cabe à entidade a validação das credenciais do Autenticação.Gov e utilização dos atributos do cidadão.
+\end{enumerate}
 
+\cleardoublepage
 \subsubsection{SAML 2.0}
-\subsubsection{SSL/TLS}
+
+O \gls{saml} define um padrão standard para a troca de informação segura entre diversas entidades na Web.
+
+Mais precisamente, o \gls{saml} define um framework \gls{xml} para a troca de asserções de informação entre entidades. 
+
+\begin{displayquote}
+"...to define, enhance, and maintain a standard XML-based framework for creating and
+129 exchanging authentication and authorization information."
+\\[5pt]
+\rightline{{-- Security Assertion Markup Language V2.0 Technical Overview\cite{hughes2005security}}}
+\end{displayquote}
+
+A versão 2.0 do \gls{saml} foi aprovada pela \gls{oasis} em 2005, modificando o standard de tal forma, que implementações baseadas na versão prévia (versão 1.1) eram incompatíveis com o novo standard.
+
+Na especificação técnica do \gls{saml} existem dois \emph{providers}:
+
+\begin{itemize}
+    \item \emph{Identity provider}: faculta a autenticação, verificando a identidade do utilizador, procedendo ao envio de informação para o \emph{Service provider}, juntamente com os níveis de acesso do utilizador.
+    \item \emph{Service provider}: requesita a autenticação ao \emph{Identity provider} de modo a proceder à autorização do utilizador.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/saml/samlproviders.jpg}
+    \caption{Interação entre o utilizador e os respetivos \emph{Providers}. \cite{samlProviderPic}}
+\end{figure}
+
+Devido à especificação do \gls{saml}, este permite a utilização de \gls{sso}, ou seja, após um único login do utilizador, essas mesmas credenciais podem ser reutilizadas para proceder ao \emph{login} noutros \emph{Service Providers}.
+
+De modo a realizar comunicação entre os \emph{providers} é utilizado um documento \gls{xml}, conhecido por \emph{SAML Assertion}. Existem 3 tipos de \emph{Assertions}:
+
+\begin{enumerate}
+    \item \emph{Authentication}: forcene identificação do utilizador em questão, providenciando dados como a hora a que o login foi realizado e que tipo de autenticação foi utilizada (por exemplo: Cartão de Cidadão).
+    \item \emph{Attribution}: transmite atributos \gls{saml} (um atributo \gls{saml} trata-se de um formato de dados responsável pela transmição de informação sobre o utilizador) para o \emph{Service Provider}.
+    \item \emph{Authorization}: reporta se o utilizador está autorizado a utilizar o serviço em questão, ou se este foi negado autorização pelo \emph{Identity Provider}.
+\end{enumerate}
+
+Em suma, o \gls{saml} funciona através do partilha de informação sobre utilizadores, login e atributos entre ambos os \emph{Providers}. 
+
+Após ser realizado um login com o auxílio do \emph{Identity Provider}, este pode enviar atributos SAML para o \emph{Service Provider} quando o utilizador tenta aceder a certos serviços. Por ventura, o \emph{Service Provider} requesita autorização e autenticação ao \emph{Identity Provider}.
+
+
+%\subsubsection{SSL/TLS}
 
 \cleardoublepage
 \section{Autenticação de pedidos via API}
