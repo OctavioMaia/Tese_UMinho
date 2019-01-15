@@ -570,7 +570,7 @@ Embora seja impossível retirar alguma informação útil do \emph{token} exempl
     
     Todos os \emph{JSON Web Token} possuem um header. Este elemento estabelece qual o algoritmo utilizado, se o \gls{jwt} foi assinado ou encriptado e por norma, como proceder ao parse do resto do \gls{jwt}.
     
-    O único atributo obrigatório num \gls{jwt} é o \emph{alg}, sendo que em \gls{jwt} que não foram encriptados este valor é \textbf{none}, sendo que neste exemplo foi utilizada a encriptação \textbf{HS256}, ou seja, \gls{hmac} com o auxílio de \gls{sha256}.
+    O único atributo obrigatório num \gls{jwt} é o \emph{alg}, sendo que em \gls{jwt} que não foram encriptados este valor é \textbf{none}, sendo que neste exemplo foi utilizada a encriptação \textbf{HS256}, ou seja, \gls{hmac} com o auxílio de \emph{SHA-256}.
     
     Existem tambem atributos opcionais, tais como \emph{typ}, cuja função é distinguir entre o \gls{jwt} e outros tipos de dados que possam ser transmitidos no mesmo formato\footnote{Tipos de dados transmissíveis: \url{http://www.iana.org/assignments/media-types/media-types.xhtml}}, sendo que neste exemplo é transmitido um \emph{JWT} e \emph{cty}, que apenas é utilizado quando existem aninhamento de \gls{jwt} dentro de outro(s) \gls{jwt}.
     
@@ -667,4 +667,38 @@ Cada vez que uma chamada à \gls{api} é feita, irá ser verificado se o \emph{t
 \cleardoublepage
 \section{Autenticação backend}
 
-Aqui falo das diversas funçoes de middleware que verificam se o utilizador tem nível de acesso adequado? Nao parece haver muito mais para dizer
+De modo a proporcionar mecanismos capazes de lidar com os diversos tipos de utilizadores presentes na plataforma \gls{clav}, foi implementada uma solução baseada em \emph{middleware}. As funções de \emph{middleware} são responsáveis pela verificação do nível de acesso do utilizador. 
+
+Para tal, foram desenvolvidas as seguintes funções, \emph{checkLevel} e \emph{isLevel}, sendo a primeira uma chamada à função auxiliar \emph{isLevel}.
+
+\begin{algorithm}
+    \caption{Pseudo código da função de middleware \emph{checkLevel}.}
+    \begin{algorithmic}[1]
+        \Function{checkLevel7}{user, next}
+            \State \textbf{return} isLevel(7, user, next)
+    \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+No pseudo código anterior podemos ver a implementação da função \emph{checkLevel7}, cujo objectivo é verificar se o utilizador possui acesso de nível 7, ou superior.
+
+Esta função recorre a uma chamada à função \emph{isLevel}, sendo passado como parâmetro o nível de acesso a verificar.
+
+\begin{algorithm}
+    \caption{Pseudo código da função de middleware \emph{isLevel}.}
+    \begin{algorithmic}[1]
+    \Function{isLevel}{clearance, user, next}
+        \If {$user.isAuthenticated$}
+            \If {$user.level \geq clearance$}
+                \State \textbf{return} next()
+            \Else
+                \State \textbf{return} redirect('back')
+            \EndIf
+        \Else
+            \State \textbf{return} redirect('login')
+        \EndIf
+    \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+Com as estratégias de autenticação mencionadas anteriormente podemos assegurar uma correta implementação de níveis de acesso, não sendo possível a utilizadores aceder a conteúdo ao qual não possuem permissão.
