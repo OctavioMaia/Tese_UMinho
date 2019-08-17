@@ -368,7 +368,7 @@
 \\\withboldnewsgott{\large\@subtitleA}
 \\\withboldnewsgott{\large\@subtitleB}
 \\\rule{0pt}{4.2cm}
-\\\optionalwithnewsgott{\large Relat\'{o}rio de pr\'{e}-disserta\c{c}\~{a}o}
+\\\optionalwithnewsgott{\large Dissertação de Mestrado}
 \\\optionalwithnewsgott{\large Mestrado Integrado em \@masterdegree}
 \\\rule{0pt}{6mm}
 \\\optionalwithnewsgott{\large Trabalho efectuado sob orienta\c{c}\~{a}o de}
@@ -442,6 +442,13 @@
 	\addtocontents{toc}{\bigskip} % Making the table of contents look good.
 	\cleardoublepage
 	\originalbibliography{#1}
+}
+
+
+%%keywords
+\providecommand{\keywords}[1]
+{
+  \textbf{\textit{Keywords---}} #1
 }
 
 \makeatother
