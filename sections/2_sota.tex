@@ -192,6 +192,19 @@ As principais funcionalidades do Autenticação.Gov são as seguintes:
 
 \cleardoublepage
 \subsection{Workflow do Autenticação.Gov}
+
+O workflow do processo de autenticação com o Autenticação.Gov cinge-se a dois possíveis cenários:
+
+\begin{enumerate}
+    \item \textbf{Primeira autenticação}
+    
+    Este ocorre quando o cidadão/utilizador não possui sessão ativa no portal do Autenticação.Gov, quer por a sessão prévia ter expirado ou esta ser inexistente.
+    
+    \item \textbf{Re-autenticação ou Renovação de uma autenticação prévia}
+    
+    Quando o cidadão/utilizador já teve sessão iniciada numa entidade utilizadora do Autenticação.Gov, este pode simplesmente confirmar a cedência de dados à plataforma \gls{clav}, não havendo a necessidade de nova introdução de PIN de autenticação, excepto num caso explorado na secção \ref{renovacaoAuth}.
+\end{enumerate}
+
 \subsubsection{Primeira autenticação}
 De acordo com o manual de Integração do Autenticação.Gov\cite{manualAuthGov} providenciado pela \gls{ama}, existem 4 interacções entre o \emph{Autenticação.Gov} e a entidade/serviço a aceder, especificadas na figura \ref{workflow}.
 
@@ -214,7 +227,7 @@ De acordo com o manual de Integração do Autenticação.Gov\cite{manualAuthGov}
 \end{enumerate}
 
 \cleardoublepage
-\subsubsection{Renovação de autenticação}
+\subsubsection{Renovação de autenticação} \label{renovacaoAuth}
 
 Além das etapas numeradas entre \textbf{1} e \textbf{4} da figura \ref{workflow}, existe a possibilidade de o utilizador já ter sessão iniciada noutro portal da \gls{ap}, como por exemplo, a Segurança Social Direta\footnote{Mais informações em \url{https://app.seg-social.pt/ptss/}}.
 
@@ -233,7 +246,7 @@ Esta capacidade de re-autenticação sem nova inserção do PIN de autenticaçã
     \setcounter{enumi}{4}
     \item É feito o acesso a uma nova entidade, neste caso a plataforma \gls{clav}, tendo o utilizador feito a autenticação na entidade prévia.
     \item O site da entidade revalida a credencial electrónica junto do Autenticação.Gov.
-    \item Cabe ao Autenticação.Gov reemitir ou revalidar a credencial consoante os seguintes dois casos:
+    \item Cabe ao Autenticação.Gov re-emitir ou revalidar a credencial consoante os seguintes dois casos:
     \begin{enumerate}
         \item Se forem solicitados os mesmos atributos da última autenticação e estes tenham sido obtidos com um nível de confiança igual ou superior, não será necessária nova introdução de PIN.
         \item Caso sejam pedidos atributos diferentes, então o Autenticação.Gov irá requisitar ao utilizador nova inserção de PIN.
@@ -241,28 +254,214 @@ Esta capacidade de re-autenticação sem nova inserção do PIN de autenticaçã
     \item O site de entidade recebe a resposta do Autenticação.Gov e autentica utilizador em questão.
 \end{enumerate}
 
-Através desta implementação de renovação de autenticação, é assegurada a correta implementação de um serviço \gls{sso}, referida na secção \ref{infoAuthGov}.
+Através desta implementação de renovação de autenticação, é assegurada a correta imple-mentação de um serviço \gls{sso}, referida na secção \ref{infoAuthGov}.
 
 \cleardoublepage
 \subsection{Funcionamento do Autenticação.Gov}
 
-De modo a ser possível utilizar o Autenticação.Gov é necessária a criação de um pedido baseado em \gls{saml}, assinado digitalmente com um certificado X.509 e encriptado com a nossa chave \gls{rsa} privada, bem como a respectiva cadeia de autenticação.
+De modo a utilizar o Autenticação.Gov é necessária a criação de um pedido baseado em \gls{saml}, assinado digitalmente com um certificado X.509 e encriptado com a nossa chave \gls{rsa} privada, bem como a respectiva cadeia de autenticação.
 
-Nas secções seguintes iremos explorar todas as vertentes necessárias para uma correta utilização de pedidos de autenticação com o Autenticação.Gov.
+Existem dois tipos de pedidos \gls{saml} utilizados pelo Autenticação.Gov:
 
-\subsubsection{Par de chaves públicas/privadas}
-
-O Autenticação.Gov utiliza um mecanismo de autenticação de pedidos baseado em pares de chaves públicas e privadas.
-
-Para tal, é necessário gerar um par de chaves baseado no formato \gls{rsa}, do qual resultam duas chaves:
 \begin{itemize}
-    \item Chave pública: chave de conhecimento público, disponível para qualquer utilizador, não possuindo qualquer tipo de informação sensível.
-    \item Chave privada: chave de conhecimento privado, ou seja, apenas o criador da chave possui informação sobre a mesma.
+    \item \textbf{SAML Request}
+    
+    Pedido de autenticação em formato \gls{saml}, enviado ao Autenticação.Gov, no qual é enviada informação sobre a origem, assinaturas, atributos a requisitar, etc.
+    
+    \item \textbf{SAML Response}
+    
+    Resposta em formato \gls{saml} ao pedido previamente referido, enviado em binding \emph{HTTP-POST} para o Issuer do pedido de autenticação.
+    
+    Na resposta são enviados os dados previamente requisitados, bem como resposta de sucesso, insucesso ou cancelamento do pedido de autenticação por parte do utilizador.
 \end{itemize}
 
-Na autenticação com o Cartão de Cidadão, é enviado um pedido para o Autenticação.Gov, sendo este assinado digitalmente com auxílio da chave privada gerada previamente.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.1\textwidth]{img/saml/clavflow.png}
+    \caption{Funcionamento do Autenticação.Gov na plataforma CLAV.}
+    \label{clavflow}
+\end{figure}
 
-Como o Autenticação.Gov possui acesso à chave pública previamente gerada, é-lhe possível verificar instantaneamente a validade do pedido em causa, sendo este processado caso seja válido, ou negado caso contrário.
+Consoante a resposta do Autenticação.Gov, o login do utilizador é autorizado ou negado, consoante exemplo na figura \ref{clavflow}.
+Este apenas é negado caso o utilizador erre o PIN de autenticação, negue acesso aos dados pedidos, ou não tenha leitor smart-card no seu computador.
+
+\cleardoublepage
+\subsubsection{AuthnRequest}
+
+Um pedido de autenticação \emph{(AuthnRequest)} é composto por 3 secções:
+
+\begin{enumerate}
+    \item \textbf{Issuer}
+    
+    Nesta secção é enviada informação sobre quem está a requisitar a autenticação, neste caso a plataforma \gls{clav}, sendo apenas necessário o envio do \emph{URL} onde origina o pedido\cite{manualAuthGov}.
+    
+    \lstset{
+        language=XML,
+        backgroundcolor=\color{white},
+        basicstyle=\ttfamily,
+        columns=fullflexible,
+        showstringspaces=false,
+        commentstyle=\color{gray}\upshape,
+        xleftmargin=-27pt,
+        xrightmargin=-27pt,
+    }
+    \begin{lstlisting}
+        <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+            http://clav-auth.di.uminho.pt
+        </Issuer>
+    \end{lstlisting}
+    
+    \vspace{-10mm}
+    \item \textbf{Signature}
+    
+    Nesta secção é realizada a assinatura digital do pedido \gls{saml}, através de métodos de canonização\cite{manualAuthGov} e transformação especificados no manual de integração.
+    
+    Posteriormente à assinatura, é transmitida informação sobre o algoritmo utilizado para o cálculo do hash, neste caso \emph{SHA-1}, bem como o valor resultante deste processo de hash.
+    
+    Por fim, é adicionado o certificado X.509 contendo a respectiva cadeia de autenticação fornecido pela \gls{ama}.
+    
+    \begin{lstlisting}
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <SignedInfo>
+        <CanonicalizationMethod Algorithm="http://www.w3.org/2001/xml-exc-c14n"/>
+        <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+        <Reference URI="#_63f47093-6377-4771-a36e-8bc506cf9e64">
+            <Transforms>
+                <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+            </Transforms>
+            <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+            <DigestValue>
+                msbCCbP1sltYLV...oaZ+nNmWwVHqE=
+            </DigestValue>
+        </Reference>
+    </SignedInfo>
+    <SignatureValue>
+            gB656A8kkR7TujX8/xfAfYJm...2EX3iK7rXxAd5HAbvB6zV1BXvDYLJ6K+ZOBGF
+    </SignatureValue>
+    <KeyInfo>
+        <X509Data>
+            <X509Certificate>
+                9AnXwiE5zOybPs8CAwEAAaOB...BlrBlEXYrXxFdIA7qATy
+            </X509Certificate>
+        </X509Data>
+    </KeyInfo>
+</Signature>
+    \end{lstlisting}
+    
+    \vspace{-10mm}
+    \item \textbf{Extensions}
+    
+    Esta secção contém os atributos que vamos requisitar ao Autenticação.Gov, aquando da autenticação de um utilizador na plataforma \gls{clav}, neste caso o seu \gls{nic} e Nome Completo.
+    
+    \begin{lstlisting}
+<Extensions>
+    <fa:RequestedAttributes xmlns:fa="http://autenticacao.cartaodecidadao.pt/atributos">
+        <fa:RequestedAttribute 
+            Name="http://interop.gov.pt/MDC/Cidadao/NIC" 
+            NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
+            isRequired="True"/>
+        <fa:RequestedAttribute
+            Name="http://interop.gov.pt/MDC/Cidadao/NomeCompleto" 
+            NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
+            isRequired="True"/>
+    </fa:RequestedAttributes>
+</Extensions>
+    \end{lstlisting}
+\end{enumerate}
+
+\lstset{
+        language=XML,
+        backgroundcolor=\color{white},
+        basicstyle=\ttfamily,
+        columns=fullflexible,
+        showstringspaces=false,
+        commentstyle=\color{gray}\upshape,
+        xleftmargin=-27pt,
+        xrightmargin=-27pt,
+    }
+\begin{lstlisting}
+<AuthnRequest 
+    xmlns="urn:oasis:names:tc:SAML:2.0:protocol"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    ID="_63f47093-6377-4771-a36e-8bc506cf9e64"
+    Version="2.0"
+    IssueInstant="2019-08-20T14:51:18.061Z"
+    Destination="https://preprod.autenticacao.gov.pt/fa/Default.aspx"
+    ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+    AssertionConsumerServiceURL="https://clav-auth.di.uminho.pt/assertion"
+    ProviderName="CLAV" 
+    Consent="urn:oasis:names:tc:SAML:2.0:consent:unspecified">
+    <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+        http://clav-auth.di.uminho.pt
+    </Issuer>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod Algorithm="http://www.w3.org/2001/xml-exc-c14n"/>
+            <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+            <Reference URI="#_63f47093-6377-4771-a36e-8bc506cf9e64">
+                <Transforms>
+                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                    <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                </Transforms>
+                <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                <DigestValue>
+                    msbCCbP1sltYLV...oaZ+nNmWwVHqE=
+                </DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>
+            gB656A8kkR7TujX8/xfAfYJm...2EX3iK7rXxAd5HAbvB6zV1BXvDYLJ6K+ZOBGF
+        </SignatureValue>
+        <KeyInfo>
+            <X509Data>
+                <X509Certificate>
+                    9AnXwiE5zOybPs8CAwEAAaOB...BlrBlEXYrXxFdIA7qATy
+                </X509Certificate>
+            </X509Data>
+        </KeyInfo>
+    </Signature>
+    <Extensions>
+        <fa:RequestedAttributes xmlns:fa="http://autenticacao.cartaodecidadao.pt/atributos">
+            <fa:RequestedAttribute 
+                Name="http://interop.gov.pt/MDC/Cidadao/NIC" 
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
+                isRequired="True"/>
+            <fa:RequestedAttribute
+                Name="http://interop.gov.pt/MDC/Cidadao/NomeCompleto" 
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
+                isRequired="True"/>
+        </fa:RequestedAttributes>
+    </Extensions>
+</AuthnRequest>
+\end{lstlisting}
+
+\cleardoublepage
+\subsubsection{AuthnResponse}
+
+\cleardoublepage
+\subsection{Especificação do Autenticação.Gov}
+\subsubsection{Par de chaves públicas/privadas}
+
+O Autenticação.Gov utiliza um mecanismo de autenticação de pedidos baseado em pares de chaves públicas e privadas. Para tal, é necessário gerar um par de chaves baseado no formato \gls{rsa}, do qual resultam duas chaves:
+\begin{itemize}
+    \item \textbf{Chave privada: }
+    Chave de conhecimento privado, ou seja, apenas o criador da chave possui informação sobre a mesma. Esta é composta por dois números primos aleatórios de comprimento substancial.
+    
+    \item \textbf{Chave pública: }
+    Chave de conhecimento público, disponível para qualquer utilizador, não possuindo qualquer tipo de informação sensível. Esta é o resultado da multiplicação dos dois números primeiros da chave privada, sendo quase impossível a obtenção da combinação original.
+\end{itemize}
+
+Na autenticação com o Cartão de Cidadão, é enviado um pedido para o Autenticação.Gov, sendo este assinado digitalmente com auxílio da chave privada. 
+Como o Autenticação.Gov possui acesso à chave pública, é-lhe possível verificar instantaneamente a validade do pedido em causa, sendo este processado caso seja válido, ou negado caso contrário.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.80\textwidth]{img/cc/OpenPGPSign.jpg}
+    \caption{Exemplo da assinatura e leitura através de par de chaves.}
+    \label{fig:par_chaves}
+\end{figure}
 
 Na figura \ref{fig:par_chaves} podemos verificar que o funcionamento da assinatura digital baseado em pares de chaves segue os seguintes passos:
 
@@ -272,60 +471,64 @@ Na figura \ref{fig:par_chaves} podemos verificar que o funcionamento da assinatu
     \item Após a recepção do mesmo pelo destinatário, é feita a leitura com o auxílio da chave pública do remetente presente no certificado X509 do mesmo.
 \end{enumerate}
 
-\cleardoublepage
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.9\textwidth]{img/cc/OpenPGPSign.jpg}
-    \caption{Exemplo da assinatura e leitura através de par de chaves.}
-    \label{fig:par_chaves}
-\end{figure}
+Segue-se um exemplo de uma chave \gls{rsa} privada, sendo esta de maior comprimento quando comparada com a chave pública, devido a conter dois números primos (como foi referido no início desta secção).
 
+\vspace{5mm}
 \textbf{Exemplo de chave RSA privada:}
 
 \begin{verbatim}
-    -----BEGIN RSA PRIVATE KEY-----
-    MIICXAIBAAKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0FPqri0cb2JZfXJ/DgYSF6vUp
-    wmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/3j+skZ6UtW+5u09lHNsj6tQ5
-    1s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZwIDAQABAoGAFijko56+qGyN8M0RVyaRAXz++xTqHBLh
-    3tx4VgMtrQ+WEgCjhoTwo23KMBAuJGSYnRmoBZM3lMfTKevIkAidPExvYCdm5dYq3XToLkkLv5L2
-    pIIVOFMDG+KESnAFV7l2c+cnzRMW0+b6f8mR1CJzZuxVLL6Q02fvLi55/mbSYxECQQDeAw6fiIQX
-    GukBI4eMZZt4nscy2o12KyYner3VpoeE+Np2q+Z3pvAMd/aNzQ/W9WaI+NRfcxUJrmfPwIGm63il
-    AkEAxCL5HQb2bQr4ByorcMWm/hEP2MZzROV73yF41hPsRC9m66KrheO9HPTJuo3/9s5p+sqGxOlF
-    L0NDt4SkosjgGwJAFklyR1uZ/wPJjj611cdBcztlPdqoxssQGnh85BzCj/u3WqBpE2vjvyyvyI5k
-    X6zk7S0ljKtt2jny2+00VsBerQJBAJGC1Mg5Oydo5NwD6BiROrPxGo2bpTbu/fhrT8ebHkTz2epl
-    U9VQQSQzY1oZMVX8i1m5WUTLPz2yLJIBQVdXqhMCQBGoiuSoSjafUhV7i1cEGpb88h5NBYZzWXGZ
-    37sJ5QsW+sJyoNde3xH8vdXhzU7eT82D6X/scw9RZz+/6rCJ4p0=
-    -----END RSA PRIVATE KEY-----
+-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0FPqri0cb2JZfXJ/DgYSF6vUp
+wmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/3j+skZ6UtW+5u09lHNsj6tQ5
+1s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZwIDAQABAoGAFijko56+qGyN8M0RVyaRAXz++xTqHBLh
+3tx4VgMtrQ+WEgCjhoTwo23KMBAuJGSYnRmoBZM3lMfTKevIkAidPExvYCdm5dYq3XToLkkLv5L2
+pIIVOFMDG+KESnAFV7l2c+cnzRMW0+b6f8mR1CJzZuxVLL6Q02fvLi55/mbSYxECQQDeAw6fiIQX
+GukBI4eMZZt4nscy2o12KyYner3VpoeE+Np2q+Z3pvAMd/aNzQ/W9WaI+NRfcxUJrmfPwIGm63il
+AkEAxCL5HQb2bQr4ByorcMWm/hEP2MZzROV73yF41hPsRC9m66KrheO9HPTJuo3/9s5p+sqGxOlF
+L0NDt4SkosjgGwJAFklyR1uZ/wPJjj611cdBcztlPdqoxssQGnh85BzCj/u3WqBpE2vjvyyvyI5k
+X6zk7S0ljKtt2jny2+00VsBerQJBAJGC1Mg5Oydo5NwD6BiROrPxGo2bpTbu/fhrT8ebHkTz2epl
+U9VQQSQzY1oZMVX8i1m5WUTLPz2yLJIBQVdXqhMCQBGoiuSoSjafUhV7i1cEGpb88h5NBYZzWXGZ
+37sJ5QsW+sJyoNde3xH8vdXhzU7eT82D6X/scw9RZz+/6rCJ4p0=
+-----END RSA PRIVATE KEY-----
 \end{verbatim}
+
+De seguida temos um exemplo de uma chave pública, de menor comprimento quando comparada com a chave privada (devido a ser o produto dos dois números primos da chave privada).
 
 \vspace{5mm}
 \textbf{Exemplo de chave RSA pública:}
 
 \begin{verbatim}
-    -----BEGIN PUBLIC KEY-----
-    MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0
-    FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
-    3j+skZ6UtW+5u09lHNsj6tQ51s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZwIDAQAB
-    -----END PUBLIC KEY-----
+-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0
+FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
+3j+skZ6UtW+5u09lHNsj6tQ51s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZwIDAQAB
+-----END PUBLIC KEY-----
 \end{verbatim}
 
 \cleardoublepage
 \subsubsection{Certificado X.509}
 
-As chaves públicas podem ser guardadas sob a forma de um certificado de chave pública. 
+O Autenticação.Gov requer o fornecimento de um certificado no pedido SAML, de modo a validar as origens do pedido, bem como confirmar a integridade e validade do mesmo.
 
-O formato utilizado na geração deste certificado é designado por \emph{X.509}\cite{x509}, um padrão criado pela \gls{itu} em 1988.
+O formato deste certificado é designado por \emph{X.509}\cite{x509}, um padrão criado pela \gls{itu} em 1988.
 
-Este pode conter várias informações além da chave pública, sendo que ao abrigo do Autenticação.Gov, os certificados por ele utilizados contêm a seguinte informação:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/x509/formato.png}
+    \caption{Formato de um certificado X.509 v3.}
+    \label{fig:x509formato}
+\end{figure}
+
+Este pode conter várias informações além da chave \gls{rsa} pública (ver figura \ref{fig:x509formato}), sendo que ao abrigo do Autenticação.Gov, os certificados X.509 por ele utilizados contêm a seguinte informação:
 
 \begin{itemize}
-    \item Chave pública.
+    \item Chave pública e respetivo algoritmo.
     \item Nome da Entidade.
     \item Entidade emissora.
     \item Data de emissão.
     \item Validade do certificado.
     \item Informações de contacto.
-    \item etc.
+    \item Assinatura e respetivo algoritmo.
 \end{itemize}
 
 Com o auxílio desta informação, é possível verificar e validar o certificado, como tendo sido emitido por uma entidade certificada, sendo este passo crucial para os pedidos de autenticação com o Cartão de Cidadão.
@@ -348,25 +551,25 @@ A utilização destes certificados, auxiliados pela utilização de um canal de 
 \vspace{10mm}
 \textbf{Exemplo de Certificado X.509:}
 \begin{verbatim}
-    subject=/emailAddress=it@ama.pt/C=PT/L=Lisboa/O=AMA/OU=IT/CN=Autenticacao.Gov
-    issuer=/emailAddress=it@ama.pt/C=PT/L=Lisboa/O=AMA/OU=IT/CN=Autenticacao.Gov
-    -----BEGIN CERTIFICATE-----
-    MIIDzDCCArSgAwIBAgIGAWHCrFAKMA0GCSqGSIb3DQEBCwUAMHMxGDAWBgkqhkiG
-    9w0BCQETCWl0QGFtYS5wdDELMAkGA1UEBhMCUFQxDzANBgNVBAcTBkxpc2JvYTEM
-    MAoGA1UEChMDQU1BMQswCQYDVQQLEwJJVDEeMBwGA1UEAxMVQXV0ZW50aWNhY2Fv
-    LkdvdiBSYWl6MB4XDTE4MDIwNjEyMzg0OFoXDTI5MDIwNTEyMzg0OFowczEYMBYG
-    CSqGSIb3DQEJARMJaXRAYW1hLnB0MQswCQYDVQQGEwJQVDEPMA0GA1UEBxMGTGlz
-    Ym9hMQwwCgYDVQQKEwNBTUExCzAJBgNVBAsTAklUMR4wHAYDVQQDExVBdXRlbnRp
-    Y2FjYW8uR292IFjBkMB8GA1UdIwQYMBaAFLLBjPTQe0ItzZ3Cda8123axE-23971
-    iHk+GwTe8PDpMB0GA1UdDgQWBBSywYz00HtCLc2dwoh5PhsE3vDw6TASBgNVHRMB
-    Af8ECDAGAQH/AgEBMA4GA1UdDwEB/wQEAwICBDANBgkqhkiG9w0BAQsFAAOCAQEA
-    PIRDKpYrNQRd2/5/+Pm/xN1KXbk3uZUNPsL0T2Hz/RJoX7X3gg0+d1i9cem3izNP
-    hQXuh5GO4z+hTIBDfnpvPnjVbYZTZaApkO/GmdC6VpXBVfR4H8A7z1CzOQ52F81n
-    WHYfgpUXQfyCz1KPNw7ba4LYdiTaAg8Yyd6BmGb0ud5Pq235AzpbvJs9I7HniGMD
-    eVLH6asnt4RUkaJrIelrqSHC1ZJNXHA75LlQHkaaxG8mWnRmb4ikmaR923hca6oQ
-    1JyGrOvrVLTVKdNgy1wKSyA47HZzHLMto5EBxj/j5xKJ040MNN2N1Isg+kBEqkt+
-    pAR+Z3kctgfUVHton0cwJQ==
-    -----END CERTIFICATE-----
+subject=/emailAddress=it@ama.pt/C=PT/L=Lisboa/O=AMA/OU=IT/CN=Autenticacao.Gov
+issuer=/emailAddress=it@ama.pt/C=PT/L=Lisboa/O=AMA/OU=IT/CN=Autenticacao.Gov
+-----BEGIN CERTIFICATE-----
+MIIDzDCCArSgAwIBAgIGAWHCrFAKMA0GCSqGSIb3DQEBCwUAMHMxGDAWBgkqhkiG
+9w0BCQETCWl0QGFtYS5wdDELMAkGA1UEBhMCUFQxDzANBgNVBAcTBkxpc2JvYTEM
+MAoGA1UEChMDQU1BMQswCQYDVQQLEwJJVDEeMBwGA1UEAxMVQXV0ZW50aWNhY2Fv
+LkdvdiBSYWl6MB4XDTE4MDIwNjEyMzg0OFoXDTI5MDIwNTEyMzg0OFowczEYMBYG
+CSqGSIb3DQEJARMJaXRAYW1hLnB0MQswCQYDVQQGEwJQVDEPMA0GA1UEBxMGTGlz
+Ym9hMQwwCgYDVQQKEwNBTUExCzAJBgNVBAsTAklUMR4wHAYDVQQDExVBdXRlbnRp
+Y2FjYW8uR292IFjBkMB8GA1UdIwQYMBaAFLLBjPTQe0ItzZ3Cda8123axE-23971
+iHk+GwTe8PDpMB0GA1UdDgQWBBSywYz00HtCLc2dwoh5PhsE3vDw6TASBgNVHRMB
+Af8ECDAGAQH/AgEBMA4GA1UdDwEB/wQEAwICBDANBgkqhkiG9w0BAQsFAAOCAQEA
+PIRDKpYrNQRd2/5/+Pm/xN1KXbk3uZUNPsL0T2Hz/RJoX7X3gg0+d1i9cem3izNP
+hQXuh5GO4z+hTIBDfnpvPnjVbYZTZaApkO/GmdC6VpXBVfR4H8A7z1CzOQ52F81n
+WHYfgpUXQfyCz1KPNw7ba4LYdiTaAg8Yyd6BmGb0ud5Pq235AzpbvJs9I7HniGMD
+eVLH6asnt4RUkaJrIelrqSHC1ZJNXHA75LlQHkaaxG8mWnRmb4ikmaR923hca6oQ
+1JyGrOvrVLTVKdNgy1wKSyA47HZzHLMto5EBxj/j5xKJ040MNN2N1Isg+kBEqkt+
+pAR+Z3kctgfUVHton0cwJQ==
+-----END CERTIFICATE-----
 \end{verbatim}
 
 \cleardoublepage

@@ -451,4 +451,22 @@
   \textbf{\textit{Keywords---}} #1
 }
 
+%%XML
+\definecolor{maroon}{rgb}{0.5,0,0}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+\lstdefinelanguage{XML}{
+    columns=fullflexible,
+    basicstyle=\rmfamily,
+    commentstyle=\ttfamily\itshape\color{green!50!black},
+    morestring=[s]{"}{"}, 
+    morecomment=[s]{?}{?}, 
+    morecomment=[s]{!--}{--}, 
+    morecomment=[s]{!DOCTYPE}{]}, 
+    moredelim=[s][\color{black}]{>}{<}, 
+    moredelim=[s][\bfseries\color{black}]{\ }{=},
+    stringstyle=\color{blue}, 
+    identifierstyle=\bfseries\color{violet} } 
 \makeatother
