@@ -165,27 +165,27 @@ Esta autenticação permite às entidades que a requisitam a recolha de informa�
 As principais funcionalidades do Autenticação.Gov são as seguintes:
 
 \begin{enumerate}
-    \item Identificação através do Cartão de Cidadão
+    \item \textbf{Identificação através do Cartão de Cidadão}
     
     O Autenticação.Gov tem como objetivo a identificação segura de um Cidadão, sendo esta baseada na credenciação do mesmo durante a emissão do Cartão de Cidadão, aliado à Federação de Identidades da Plataforma de Interoperabilidade da Administração Pública.
     
-    \item Disponibilização de informação
+    \item \textbf{Disponibilização de informação}
     
     A utilização do Cartão de Cidadão em conjunção com o Autenticação.Gov permite a recolha de informação do Cidadão, através de atributos e identificadores, como por exemplo \textit{NIF} e \textit{NomeCompleto}, através da utilização da Plataforma de Interoperabilidade.
     
-    \item Single Sign-On (\gls{sso})
+    \item \textbf{Single Sign-On (\gls{sso})}
     
     Através do \gls{sso} é possível a navegação entre as várias entidades aderentes, com fornecimento dos atributos necessários para autenticação e garantia do nível de segurança proporcionado pelo Autenticação.Gov.
     
-    \item Simplificação do processo de autenticação
+    \item \textbf{Simplificação do processo de autenticação}
     
     O processo de autenticação é delegado ao Autenticação.Gov, sendo este responsável por assegurar a validade de certificados, obtenção dos atributos pedidos e a devolução dos mesmos à entidade que os solicitou.
     
-    \item Normalização do processo de autenticação
+    \item \textbf{Normalização do processo de autenticação}
     
     O processo previamente descrito é realizado com auxilio de vários níveis de segurança e qualidade de serviço. Assim sendo, é garantida a utilização da estrutura da chave pública do Cartão de Cidadão, conhecida por \gls{pki}, com recurso a validação através de \gls{ocsp} dos certificados de autenticação fornecidos.
     
-    \item Transparência no processo de autenticação
+    \item \textbf{Transparência no processo de autenticação}
     
     Sendo o cidadão parte ativa na transmissão de atributos à entidade que o solicita, este tem de dar a sua explícita permissão, podendo negar acesso a certos atributos opcionais, ou até proceder ao cancelamento do processo de autenticação corrente.
 \end{enumerate}
@@ -226,7 +226,7 @@ De acordo com o manual de Integração do Autenticação.Gov\cite{manualAuthGov}
     \item A identificação e atributos do utilizador são autenticadas e assinados digitalmente pelo Autenticação.Gov, após o que redirecciona o utilizador de volta ao portal da entidade original. Cabe à entidade a validação das credenciais do Autenticação.Gov e utilização dos atributos do cidadão.
 \end{enumerate}
 
-\cleardoublepage
+%\cleardoublepage
 \subsubsection{Renovação de autenticação} \label{renovacaoAuth}
 
 Além das etapas numeradas entre \textbf{1} e \textbf{4} da figura \ref{workflow}, existe a possibilidade de o utilizador já ter sessão iniciada noutro portal da \gls{ap}, como por exemplo, a Segurança Social Direta\footnote{Mais informações em \url{https://app.seg-social.pt/ptss/}}.
@@ -257,7 +257,7 @@ Esta capacidade de re-autenticação sem nova inserção do PIN de autenticaçã
 Através desta implementação de renovação de autenticação, é assegurada a correta imple-mentação de um serviço \gls{sso}, referida na secção \ref{infoAuthGov}.
 
 \cleardoublepage
-\subsection{Funcionamento do Autenticação.Gov}
+\subsection{Funcionamento do Autenticação.Gov} \label{funcAuthGov}
 
 De modo a utilizar o Autenticação.Gov é necessária a criação de um pedido baseado em \gls{saml}, assinado digitalmente com um certificado X.509 e encriptado com a nossa chave \gls{rsa} privada, bem como a respectiva cadeia de autenticação.
 
@@ -636,22 +636,22 @@ Como foi referido no inicio desta secção, uma resposta a um pedido de autentic
     \begin{enumerate}
         \item \textbf{Estados de primeiro nível}
         \begin{enumerate}
-            \item \emph{urn:oasis:names:tc:SAML:2.0:status:Success}
+            \item \textbf{urn:oasis:names:tc:SAML:2.0:status:Success}
             
             Este estado é retornado quando a operação de autenticação é realizada com sucesso.
             
-            \item \emph{urn:oasis:names:tc:SAML:2.0:status:Requester}
+            \item \textbf{urn:oasis:names:tc:SAML:2.0:status:Requester}
             
             Este estado é retornado quando ocorre uma falha com o fornecedor de serviços, neste caso a plataforma \gls{clav} e a autenticação não é realizada.
             
-            \item \emph{urn:oasis:names:tc:SAML:2.0:status:Responder}
+            \item \textbf{urn:oasis:names:tc:SAML:2.0:status:Responder}
             
             Este estado é retornado quando ocorre uma falha com o Autenticação.Gov e a autenticação não é realizada.
         \end{enumerate}
         
         \item \textbf{Estados subordinados}
         \begin{enumerate}
-            \item \emph{urn:oasis:names:tc:SAML:2.0:status:AuthnFailed}
+            \item \textbf{urn:oasis:names:tc:SAML:2.0:status:AuthnFailed}
             
             Ocorre quando a autenticação falhou por algum motivo alheio ao Autenticação.Gov.
             Pode ser por um destes vários fatores:
@@ -665,15 +665,15 @@ Como foi referido no inicio desta secção, uma resposta a um pedido de autentic
                 \item etc.
             \end{enumerate}
             
-            \item \emph{urn:oasis:names:tc:SAML:2.0:status:InvalidAttrNameOrValue}
+            \item \textbf{urn:oasis:names:tc:SAML:2.0:status:InvalidAttrNameOrValue}
             
             Ocorre quando é requisitado um valor ou atributo inexistente ou inválido.
             
-            \item \emph{urn:oasis:names:tc:SAML:2.0:status:RequestDenied}
+            \item \textbf{urn:oasis:names:tc:SAML:2.0:status:RequestDenied}
             
             Ocorre quando o pedido de autenticação se encontra correto, mas por algum motivo o Autenticação.Gov decidiu optar por não lhe responder.
             
-            \item \emph{urn:oasis:names:tc:SAML:2.0:status:undefined}
+            \item \textbf{urn:oasis:names:tc:SAML:2.0:status:undefined}
             
             Ocorre quando o erro contemplado não se encontra nos listados previamente.
         \end{enumerate}
@@ -717,15 +717,209 @@ Como foi referido no inicio desta secção, uma resposta a um pedido de autentic
 \end{enumerate}
 
 \cleardoublepage
-\subsection{Especificação do Autenticação.Gov}
+\subsection{Especificação do Autenticação.Gov} \label{especificacaoAuthGov}
+
+Após ter sido explorado na secção \ref{funcAuthGov} o funcionamento do Autenticação.Gov, nesta secção iremos explicar os diversos métodos que permitem a correta criação dos pedidos de autenticação em formato \gls{saml}, quer seja por auxílio a métodos de encriptação, assinatura ou comunicação.
+
+\begin{enumerate}
+    \item \textbf{SAML 2.0}
+    
+    O formato de dados trocados entre o Autenticação.Gov e as entidades é baseado em \gls{saml} 2.0, de forma a assegurar a autenticidade e integridade de todas as transações.
+    
+    A utilização do \gls{saml} HTTP-Post Binding associado ao SAML Web Browser \gls{sso} Profile permite que a autenticação seja efetuada pelo browser do utilizador, sem necessidade de ligação física entre a plataforma \gls{clav} e o Autenticação.Gov.
+    
+    \item \textbf{SSL e HTTPS}
+    
+    A comunicação entre o Autenticação.Gov e a plataforma \gls{clav} é efetuada sobre \gls{https} em canal cifrado – \gls{ssl} ou \gls{tls}.
+    
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=\textwidth]{img/saml/pedido.png}
+        \caption{Comunicação entre o Autenticação e o Fornecedor de Serviços (plataforma \gls{clav})}.
+    \end{figure}
+  
+    O Autenticação.Gov responde à plataforma \gls{clav} com informação autorizada pelo utilizador. A resposta inclui os atributos solicitados no pedido de autenticação. Esta ligação é também efetuada sobre HTTP em canal cifrado – cifrado – \gls{ssl} ou \gls{tls}.
+    
+    A utilização de canais cifrados, associado ao formato específico \gls{saml} garante que a troca de dados segue as seguintes considerações:
+    
+    \begin{enumerate}
+        \item \textbf{Privacidade de dados}
+        
+        A utilização de canais cifrados garante que os dados do utilizador se mantêm privados, impedindo a sua visualização por terceiros (ex. visualização de dados por sniffer de rede);
+        \item \textbf{Integridade de dados}
+        
+        O protocolo \gls{saml}, através de assinatura digital nos pedidos e respostas de autenticação, garante a integridade de dados de modificações não autorizadas (ex. ataque por \emph{Man-in-the Middle})\footnote{Para mais informações: \url{https://pt.wikipedia.org/wiki/Ataque_man-in-the-middle}}.
+    \end{enumerate}
+    
+    \item \textbf{Par de chaves \gls{rsa}}
+    
+    O par de chaves \gls{rsa} é utilizado para a assinatura do pedido \gls{saml}, através da chave privada do remetente e da chave pública imbutida no certificado X.509.
+    
+    Esta assinatura permite verificar a validade do pedido de autenticação \gls{saml} recebido pelo Autenticação.Gov
+
+    \item \textbf{Certificado X.509}
+    
+    Este certificado tem como função identificar a entidade responsável pelo pedido \gls{saml}. Como cada entidade possui o seu certificado único, esta é facilmente identificável.
+\end{enumerate}
+
+Após esta breve explicação de todos os elementos necessários para a criação de um pedido de autenticação \gls{saml}, iremos explorar mais em detalhe cada um deles nas secções seguintes.
+
+\cleardoublepage
+\subsubsection{SAML 2.0} \label{saml_section}
+
+O \gls{saml} define um padrão standard para a troca de informação segura entre diversas entidades na Web.
+
+Mais precisamente, o \gls{saml} define um framework \gls{xml} para a troca de asserções de informação entre entidades. 
+
+\begin{displayquote}
+"...to define, enhance, and maintain a standard XML-based framework for creating and 
+exchanging authentication and authorization information."
+\\[5pt]
+\rightline{{-- Security Assertion Markup Language V2.0 Technical Overview\cite{hughes2005security}}}
+\end{displayquote}
+
+A versão 2.0 do \gls{saml} foi aprovada pela \gls{oasis} em 2005, modificando o standard de tal forma, que implementações baseadas na versão prévia (versão 1.1) eram incompatíveis com o novo standard.
+
+Na especificação técnica do \gls{saml} existem dois \emph{providers}:
+
+\begin{itemize}
+    \item \textbf{Identity provider}
+    
+    Faculta a autenticação, verificando a identidade do utilizador, procedendo ao envio de informação para o \emph{Service provider}, juntamente com os níveis de acesso do utilizador (Autenticação.Gov).
+    
+    \item \textbf{Service provider}
+    
+    Requisita a autenticação ao \emph{Identity provider} de modo a proceder à autorização do utilizador (Plataforma \gls{clav}).
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/saml/samlproviders.jpg}
+    \caption{Interação entre o utilizador e os respetivos \emph{Providers}. \cite{samlProviderPic}}
+\end{figure}
+
+Devido à especificação do \gls{saml}, este permite a utilização de \gls{sso}, ou seja, após um único login do utilizador, essas mesmas credenciais podem ser reutilizadas para proceder ao \emph{login} noutros \emph{Service Providers}.
+
+De modo a realizar comunicação entre os \emph{providers} é utilizado um documento \gls{xml}, conhecido por \emph{SAML Assertion}. Existem 3 tipos de \emph{Assertions}:
+
+\begin{enumerate}
+    \item \textbf{Authentication} 
+    
+    Fornece identificação do utilizador em questão, providenciando dados como a hora a que o login foi realizado e que tipo de autenticação foi utilizada (por exemplo: Cartão de Cidadão).
+    
+    \item \textbf{Attribution}
+    
+    Transmite atributos \gls{saml} (um atributo \gls{saml} trata-se de um formato de dados responsável pela transmição de informação sobre o utilizador) para o \emph{Service Provider}.
+    
+    \item \textbf{Authorization}
+    
+    Reporta se o utilizador está autorizado a utilizar o serviço em questão, ou se este foi negado autorização pelo \emph{Identity Provider}.
+\end{enumerate}
+
+Em suma, o \gls{saml} funciona através do partilha de informação sobre utilizadores, login e atributos entre ambos os \emph{Providers}. 
+
+Após ser realizado um login com o auxílio do \emph{Identity Provider}, este pode enviar atributos SAML para o \emph{Service Provider} quando o utilizador tenta aceder a certos serviços. Por ventura, o \emph{Service Provider} requesita autorização e autenticação ao \emph{Identity Provider}.
+
+\cleardoublepage
+\subsubsection{SSL e HTTPS} \label{ssl_section}
+
+De modo a tornar a comunicação entre a plataforma \gls{clav} e o Autenticação anónima, bem como diminuir a possibilidade de modificação de dados não autorizadas, é necessária a implementação de um mecanismo de cifragem.
+
+Para tal, no manual de integração do Autenticação.Gov é recomendada a utilização de \emph{SSL V3+} ou \emph{TLS 1.0+}\cite{manualAuthGov}, tendo sido optada a implementação de \emph{SSL V3+} na plataforma \gls{clav}.
+
+O protocolo \gls{ssl} (Secure Sockets Layer), possui a simples tarefa de encriptar dados na Internet. Foi desenvolvido pela \emph{Netscape} em 1995, com o intuito de garantir a privacidade, autenticação e integridade dos dados nas comunicações sobre a Internet. O \gls{ssl} é o predecessor da encriptação \gls{tls} utilizada hoje em dia.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/ssl/comparison.png}
+    \caption{Figura representativa da diferença entre comunicação via \gls{http} e \gls{https}.}
+\end{figure}
+
+\vspace{5mm}
+\textbf{Mas como é que o protocolo \gls{ssl} funciona?}
+
+De modo a garantir um alto nível de privacidade, o \gls{ssl} encripta todos os dados que são transmitidos pela Internet. Isto significa que de qualquer tentativa de intercepção destes dados irá resultar um conjunto de caracteres aleatórios, sendo estes quase impossíveis de desencriptar.
+
+Quando corre um acesso a uma página web configurada com protocolo \gls{ssl}, este inicia um processo designado por "\emph{handshake}" entre os dois dispositivos, Utilizador e Servidor, de modo a garantir e verificar a identidade de ambos.
+
+Além deste processo, o \gls{ssl} também realiza a assinature digital dos dados transmitidos, de modo a garantir a integridade dos mesmos, verificando que estes não foram de alguma forma indevida modificados antes de chegar ao destino.
+
+\cleardoublepage
+\textbf{Como é realizado o \emph{handshake} entre cliente e servidor?}
+
+O processo de "\gls{ssl} \emph{handshake}" pode ser resumido a 8 simples passos:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/ssl/handshake.png}
+    \caption{Resumo do processo de \emph{handshake} entre cliente e servidor.}
+\end{figure}
+
+\begin{enumerate}
+    \item \textbf{Client Hello}
+    
+    Neste primeiro passo, o cliente envia ao servidor um \emph{"ClientHello"} de modo a propor as seguintes opções para uma conexão \gls{ssl}:
+    
+    \begin{enumerate}
+        \item Protocolo.
+        \item Versão do protocolo.
+        \item Cifra (Algoritmo de encriptação).
+        \item Data específica relativa à sessão em causa.
+        \item Outra informação que o servidor possa precisar.
+    \end{enumerate}
+    
+    \item \textbf{Server Hello}
+    
+    De seguida, o servidor envia para o cliente um \textit{"ServerHello"} de modo a confirmar as opções da conexão \gls{ssl}. É de referir que é neste passo que pode ocorrer a primeira negação da conexão \gls{ssl} devido aos seguintes factores:
+    
+    \begin{enumerate}
+        \item \textbf{Incompatibilidade de protocolo}
+        
+        Ocorre quando a versão do protocolo a utilizar proposta pelo cliente não é suportada pelo servidor, ou vice-versa.
+        
+        \item \textbf{Incompatibilidade de cifra}
+        
+        Ocorre quando a cifra proposta pelo cliente não é suportada pelo servidor, ou vice-versa.
+    \end{enumerate}
+    
+    \item \textbf{Envio do certificado pelo servidor}
+    
+    Neste passo ocorre o envio do certificado do servidor para posterior verificação pelo cliente.
+    
+    \item \textbf{Verificação do certificado}
+    
+    Nesta fase ocorre a verificação da identidade do servidor por parte do cliente, através do certificado \gls{ssl} do servidor. Caso o certificado do servidor seja inválido ou tenha expirado ocorre a negação da ligação \gls{ssl}.
+    
+    \item \textbf{Envio do certificado pelo cliente}
+    
+    Neste passo ocorre o envio do certificado do cliente para posterior verificação pelo servidor.
+    
+    \item \textbf{Verificação do certificado}
+    
+    Nesta fase ocorre a verificação da identidade do cliente por parte do servidor, através do certificado \gls{ssl} do cliente. Caso o certificado do cliente seja inválido ou tenha expirado ocorre a negação da ligação \gls{ssl}.
+    
+    \item \textbf{Troca de chaves de cliente}
+    
+    Caso o servidor confirme a identidade do cliente, o cliente irá gerar uma chave para a sessão em curso, sendo esta encriptada com a chave pública do certificado \gls{ssl} do servidor e enviada para o servidor.
+    
+    \item \textbf{Envio de dados}
+    
+    Após o envio da chave de sessão para o servidor, é iniciado o envio de dados para o mesmo. Cada pacote é encriptado utilizando a chave de sessão, sendo que após a recepção do mesmo pelo servidor, este é desencriptado pelo mesmo e por fim processado.
+\end{enumerate}
+
+Com a utilização de \emph{SSL V3} podemos garantir a anonimidade das comunicações entre a plataforma \gls{clav} e o Autenticação.Gov, bem como a eliminação de qualquer tentativa de ataque baseada em "\emph{Man-in-the-middle}", além de garantir a cifragem dos dados.
+
+\cleardoublepage
 \subsubsection{Par de chaves públicas/privadas}
 
 O Autenticação.Gov utiliza um mecanismo de autenticação de pedidos baseado em pares de chaves públicas e privadas. Para tal, é necessário gerar um par de chaves baseado no formato \gls{rsa}, do qual resultam duas chaves:
 \begin{itemize}
-    \item \textbf{Chave privada: }
+    \item \textbf{Chave privada}
+    
     Chave de conhecimento privado, ou seja, apenas o criador da chave possui informação sobre a mesma. Esta é composta por dois números primos aleatórios de comprimento substancial.
     
-    \item \textbf{Chave pública: }
+    \item \textbf{Chave pública}
+    
     Chave de conhecimento público, disponível para qualquer utilizador, não possuindo qualquer tipo de informação sensível. Esta é o resultado da multiplicação dos dois números primeiros da chave privada, sendo quase impossível a obtenção da combinação original.
 \end{itemize}
 
@@ -734,7 +928,7 @@ Como o Autenticação.Gov possui acesso à chave pública, é-lhe possível veri
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.80\textwidth]{img/cc/OpenPGPSign.jpg}
+    \includegraphics[width=\textwidth]{img/cc/OpenPGPSign.jpg}
     \caption{Exemplo da assinatura e leitura através de par de chaves.}
     \label{fig:par_chaves}
 \end{figure}
@@ -847,52 +1041,6 @@ eVLH6asnt4RUkaJrIelrqSHC1ZJNXHA75LlQHkaaxG8mWnRmb4ikmaR923hca6oQ
 pAR+Z3kctgfUVHton0cwJQ==
 -----END CERTIFICATE-----
 \end{verbatim}
-
-\cleardoublepage
-\subsubsection{SAML 2.0} \label{saml_section}
-
-O \gls{saml} define um padrão standard para a troca de informação segura entre diversas entidades na Web.
-
-Mais precisamente, o \gls{saml} define um framework \gls{xml} para a troca de asserções de informação entre entidades. 
-
-\begin{displayquote}
-"...to define, enhance, and maintain a standard XML-based framework for creating and 
-exchanging authentication and authorization information."
-\\[5pt]
-\rightline{{-- Security Assertion Markup Language V2.0 Technical Overview\cite{hughes2005security}}}
-\end{displayquote}
-
-A versão 2.0 do \gls{saml} foi aprovada pela \gls{oasis} em 2005, modificando o standard de tal forma, que implementações baseadas na versão prévia (versão 1.1) eram incompatíveis com o novo standard.
-
-Na especificação técnica do \gls{saml} existem dois \emph{providers}:
-
-\begin{itemize}
-    \item \emph{Identity provider}: faculta a autenticação, verificando a identidade do utilizador, procedendo ao envio de informação para o \emph{Service provider}, juntamente com os níveis de acesso do utilizador (Autenticação.Gov).
-    \item \emph{Service provider}: requisita a autenticação ao \emph{Identity provider} de modo a proceder à autorização do utilizador (Plataforma \gls{clav}).
-\end{itemize}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{img/saml/samlproviders.jpg}
-    \caption{Interação entre o utilizador e os respetivos \emph{Providers}. \cite{samlProviderPic}}
-\end{figure}
-
-Devido à especificação do \gls{saml}, este permite a utilização de \gls{sso}, ou seja, após um único login do utilizador, essas mesmas credenciais podem ser reutilizadas para proceder ao \emph{login} noutros \emph{Service Providers}.
-
-De modo a realizar comunicação entre os \emph{providers} é utilizado um documento \gls{xml}, conhecido por \emph{SAML Assertion}. Existem 3 tipos de \emph{Assertions}:
-
-\begin{enumerate}
-    \item \emph{Authentication}: forcene identificação do utilizador em questão, providenciando dados como a hora a que o login foi realizado e que tipo de autenticação foi utilizada (por exemplo: Cartão de Cidadão).
-    \item \emph{Attribution}: transmite atributos \gls{saml} (um atributo \gls{saml} trata-se de um formato de dados responsável pela transmição de informação sobre o utilizador) para o \emph{Service Provider}.
-    \item \emph{Authorization}: reporta se o utilizador está autorizado a utilizar o serviço em questão, ou se este foi negado autorização pelo \emph{Identity Provider}.
-\end{enumerate}
-
-Em suma, o \gls{saml} funciona através do partilha de informação sobre utilizadores, login e atributos entre ambos os \emph{Providers}. 
-
-Após ser realizado um login com o auxílio do \emph{Identity Provider}, este pode enviar atributos SAML para o \emph{Service Provider} quando o utilizador tenta aceder a certos serviços. Por ventura, o \emph{Service Provider} requesita autorização e autenticação ao \emph{Identity Provider}.
-
-\newpage
-\subsubsection{SSL} \label{ssl_section}
 
 \newpage
 \section{Cartão de Cidadão}
