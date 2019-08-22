@@ -1,0 +1,170 @@
+%%AuthnRequest
+\lstset{
+        language=XML,
+        backgroundcolor=\color{white},
+        basicstyle=\ttfamily,
+        columns=fullflexible,
+        showstringspaces=false,
+        commentstyle=\color{gray}\upshape
+    }
+\begin{lstlisting}
+<AuthnRequest 
+    xmlns="urn:oasis:names:tc:SAML:2.0:protocol"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    ID="_63f47093-6377-4771-a36e-8bc506cf9e64"
+    Version="2.0"
+    IssueInstant="2019-08-20T14:51:18.061Z"
+    Destination="https://preprod.autenticacao.gov.pt/fa/Default.aspx"
+    ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+    AssertionConsumerServiceURL="https://clav-auth.di.uminho.pt/assertion"
+    ProviderName="CLAV" 
+    Consent="urn:oasis:names:tc:SAML:2.0:consent:unspecified">
+    <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+        http://clav-auth.di.uminho.pt
+    </Issuer>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod Algorithm="http://www.w3.org/2001/xml-exc-c14n"/>
+            <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+            <Reference URI="#_63f47093-6377-4771-a36e-8bc506cf9e64">
+                <Transforms>
+                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                    <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                </Transforms>
+                <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                <DigestValue>
+                    msbCCbP1sltYLV...oaZ+nNmWwVHqE=
+                </DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>
+            gB656A8kkR7TujX8/xfAfYJm...2EX3iK7rXxAd5HAbvB6zV1BXvDYLJ6K+ZOBGF
+        </SignatureValue>
+        <KeyInfo>
+            <X509Data>
+                <X509Certificate>
+                    9AnXwiE5zOybPs8CAwEAAaOB...BlrBlEXYrXxFdIA7qATy
+                </X509Certificate>
+            </X509Data>
+        </KeyInfo>
+    </Signature>
+    <Extensions>
+        <fa:RequestedAttributes xmlns:fa="http://autenticacao.cartaodecidadao.pt/atributos">
+            <fa:RequestedAttribute 
+                Name="http://interop.gov.pt/MDC/Cidadao/NIC" 
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
+                isRequired="True"/>
+            <fa:RequestedAttribute
+                Name="http://interop.gov.pt/MDC/Cidadao/NomeCompleto" 
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
+                isRequired="True"/>
+        </fa:RequestedAttributes>
+    </Extensions>
+</AuthnRequest>
+\end{lstlisting}
+
+%%AuthnResponse
+\begin{lstlisting}
+<Response 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    ID="_3305700e-0ade-44b1-b81f-a10a5841d56b" 
+    InResponseTo="_4892977f-dc0b-4fd2-86f5-404d5e99f96c" 
+    Version="2.0" 
+    IssueInstant="2019-08-21T17:52:40.4910867Z" 
+    Destination="http://clav-test.di.uminho.pt/api/users/callback" 
+    Consent="urn:oasis:names:tc:SAML:2.0:consent:unspecified" 
+    xmlns="urn:oasis:names:tc:SAML:2.0:protocol">
+    <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+        https://autenticacao.cartaodecidadao.pt
+    </Issuer>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+            <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+            <Reference URI="#_3305700e-0ade-44b1-b81f-a10a5841d56b">
+                <Transforms>
+                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                    <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                </Transforms>
+                <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                <DigestValue>
+                    Ywj/KbzIMOrP8lW0w9cH9Ycyqc4=
+                </DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>
+            H+ZKpzUZb+YJFTM...z8aaHo7uPnhLvg2TeI1t7p
+        </SignatureValue>
+        <KeyInfo>
+            <X509Data>
+                <X509Certificate>
+                    MIIEZzCC...0abruji
+                </X509Certificate>
+            </X509Data>
+        </KeyInfo>
+    </Signature>
+    <Extensions>
+        <fa:FAAALevel xmlns:fa="http://autenticacao.cartaodecidadao.pt/atributos">4
+        </fa:FAAALevel>
+    </Extensions>
+    <Status>
+        <StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </Status>
+    <Assertion 
+        Version="2.0" 
+        ID="_116a2041-ed1a-445c-8b3f-95baef3f5e00" 
+        IssueInstant="2019-08-21T17:52:40.4910867Z" 
+        xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+        <Issuer>https://autenticacao.cartaodecidadao.pt</Issuer>
+        <Subject>
+            <NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">
+                urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified
+            </NameID>
+            <SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                <SubjectConfirmationData 
+                    NotOnOrAfter="2019-08-21T17:57:40Z" 
+                    Recipient="http://clav-auth.di.uminho.pt" 
+                    InResponseTo="_4892977f-dc0b-4fd2-86f5-404d5e99f96c" 
+                    Address="https://ignore.mordomo.gov.pt"/>
+            </SubjectConfirmation>
+        </Subject>
+        <Conditions 
+            NotBefore="2019-08-21T17:52:40Z" 
+            NotOnOrAfter="2019-08-21T17:57:40Z">
+            <AudienceRestriction>
+                <Audience>
+                    http://clav-auth.di.uminho.pt
+                </Audience>
+            </AudienceRestriction>
+            <OneTimeUse/>
+        </Conditions>
+        <AuthnStatement AuthnInstant="2019-08-21T17:52:40.4910867Z">
+            <AuthnContext>
+                <AuthnContextDecl xsi:type="xsd:string"/>
+            </AuthnContext>
+        </AuthnStatement>
+        <AttributeStatement>
+            <Attribute 
+                Name="http://interop.gov.pt/MDC/Cidadao/NIC" 
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
+                d4p1:AttributeStatus="Available" 
+                xmlns:d4p1="http://autenticacao.cartaodecidadao.pt/atributos">
+                <AttributeValue xsi:type="xsd:string">
+                    14732493
+                </AttributeValue>
+            </Attribute>
+            <Attribute 
+                Name="http://interop.gov.pt/MDC/Cidadao/NomeCompleto" 
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
+                d4p1:AttributeStatus="Available" 
+                xmlns:d4p1="http://autenticacao.cartaodecidadao.pt/atributos">
+                <AttributeValue xsi:type="xsd:string">
+                    OCTAVIO JOSE AZEVEDO MAIA
+                </AttributeValue>
+            </Attribute>
+        </AttributeStatement>
+    </Assertion>
+</Response>
+\end{lstlisting}

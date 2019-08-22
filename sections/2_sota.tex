@@ -266,18 +266,18 @@ Existem dois tipos de pedidos \gls{saml} utilizados pelo Autenticação.Gov:
 \begin{itemize}
     \item \textbf{SAML Request}
     
-    Pedido de autenticação em formato \gls{saml}, enviado ao Autenticação.Gov, no qual é enviada informação sobre a origem, assinaturas, atributos a requisitar, etc.
+    Pedido de autenticação (\emph{AuthnRequest}) em formato \gls{saml}, enviado ao Autenticação.Gov, no qual é enviada informação sobre a origem, assinaturas, atributos a requisitar, etc.
     
     \item \textbf{SAML Response}
     
-    Resposta em formato \gls{saml} ao pedido previamente referido, enviado em binding \emph{HTTP-POST} para o Issuer do pedido de autenticação.
+    Resposta (\emph{AuthnResponse}) em formato \gls{saml} ao pedido previamente referido, enviado em binding \emph{HTTP-POST} para o Issuer do pedido de autenticação.
     
     Na resposta são enviados os dados previamente requisitados, bem como resposta de sucesso, insucesso ou cancelamento do pedido de autenticação por parte do utilizador.
 \end{itemize}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1.1\textwidth]{img/saml/clavflow.png}
+    \includegraphics[width=\textwidth]{img/saml/clavflow.png}
     \caption{Funcionamento do Autenticação.Gov na plataforma CLAV.}
     \label{clavflow}
 \end{figure}
@@ -286,14 +286,123 @@ Consoante a resposta do Autenticação.Gov, o login do utilizador é autorizado 
 Este apenas é negado caso o utilizador erre o PIN de autenticação, negue acesso aos dados pedidos, ou não tenha leitor smart-card no seu computador.
 
 \cleardoublepage
-\subsubsection{AuthnRequest}
+\subsubsection{AuthnRequest} \label{authnRequestSection}
 
-Um pedido de autenticação \emph{(AuthnRequest)} é composto por 3 secções:
+Um pedido de autenticação \emph{(AuthnRequest)} é escrito na linguagem \gls{saml}, sendo esta baseada em \gls{xml}.
+
+Como podemos verificar no exemplo em baixo, este pedido segue o formato standard do \gls{xml}, tendo como elemento raíz o \emph{AuthnRequest}.
+
+Contidos dentro do \emph{AuthnRequest} está o elemnto \emph{Issuer}, o elemento \emph{Signature} e por fim o elemento \emph{Extensions}, sendo estes explorados posteriormente nesta secção.
+
+\lstset{
+    language=XML,
+    backgroundcolor=\color{white},
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+    showstringspaces=false,
+    commentstyle=\color{gray}\upshape
+}
+\begin{lstlisting}
+<AuthnRequest 
+    xmlns="urn:oasis:names:tc:SAML:2.0:protocol"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    ID="_63f47093-6377-4771-a36e-8bc506cf9e64"
+    Version="2.0"
+    IssueInstant="2019-08-20T14:51:18.061Z"
+    Destination="https://preprod.autenticacao.gov.pt/fa/Default.aspx"
+    ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+    AssertionConsumerServiceURL="http://clav-test.di.uminho.pt/api/users/callback"
+    ProviderName="CLAV">
+    <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+        ...
+    </Issuer>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        ...
+    </Signature>
+    <Extensions>
+        ...
+    </Extensions>
+</AuthnRequest>
+\end{lstlisting}
+
+\vspace{-7mm}
+O elemento de raiz, \emph{AuthnRequest}, contém os seguintes atributos, sendo estes de carácter obrigatório para a correta criação de um pedido de autenticação \gls{saml}.
+
+\begin{itemize}
+    \item \textbf{ID}
+    
+    Atributo baseado no tipo de dados \emph{xs:ID}\footnote{Definido em: \url{https://www.w3.org/TR/xmlschema-2/\#ID}}, sendo este gerado com recurso ao \emph{UUID\//v4}. Devido à especificação do Autenticação.Gov, este ID gerado tem de ser precedido de um "\_".
+    
+    \item \textbf{Version}
+    
+    Atributo responsável pela identificação da versão \gls{saml} utilizada neste pedido. Neste caso, o Autenticação.Gov está configurado para apenas funcionar com a versão 2.0.
+    
+    \item \textbf{IssueInstant}
+    
+    Atributo cujo valor identifica a data de emissão do pedido \gls{saml} em formato UTC\footnote{Definido em: \url{http://www.w3.org/TR/xmlschema-2/\#dateTime}}.
+    
+    \item \textbf{Destination}
+    
+    Atributo responsável pelo URL para o qual o pedido \gls{saml} é enviado, sendo apenas possível um de dois URL:
+    \begin{itemize}
+        \item \textbf{Ambiente de teste } \url{https://preprod.autenticacao.gov.pt/fa/Default.aspx}
+        
+        O ambiente de teste é utilizado para desenvolvimento de aplicações antes destas serem libertadas ao público, não sendo forçado o uso de \emph{HTTPS} nem comunicação por \emph{SSL/TLS}.
+        
+        \item \textbf{Ambiente de produção } \url{https://autenticacao.gov.pt/fa/Default.aspx} 
+        
+        Este ambiente é utilizado numa fase final da aplicação, ou seja, quando a mesma está pronta para uso do público geral, sendo nesta fase obrigatório o uso de \emph{HTTPS} e comunicação com auxílio de \emph{SSL/TLS}.
+    \end{itemize}
+    
+    No momento de escrita desta dissertação, a plataforma \gls{clav} utiliza o ambiente de teste.
+    
+    \item \textbf{ProtocolBinding}
+    
+    Atributo que identifica o \emph{binding} a utilizar aquando da criação do pedido \gls{saml}. No manual do autenticação\cite{manualAuthGov} é especificado que apenas é utilizado o binding \emph{HTTP-POST}.
+    
+    \item \textbf{AssertionConsumerServiceURL}
+    
+    Este atributo é povoado com o URL com o qual o Autenticação.Gov irá utilizar para enviar a resposta (\emph{AuthnResponse}), ao pedido de autenticação.
+    
+    Em ambiente de produção, o URL em causa tem de utilizar \emph{HTTPS}.
+    
+    \item \textbf{ProviderName}
+    
+    Nome do fornecedor de software, plataforma ou aplicação que está a requerir a autenticação via Autenticação.Gov.
+    
+    Este valor tem de ser previamente acordado com a \gls{ama} durante a emissão da cadeira de autenticação e certificados X509.
+\end{itemize}
+
+Como foi referido no inicio desta secção, um pedido de autenticação \emph{(AuthnRequest)} é composto por 3 elementos, todas incorporadas dentro de um \emph{AuthnRequest}:
 
 \begin{enumerate}
     \item \textbf{Issuer}
     
-    Nesta secção é enviada informação sobre quem está a requisitar a autenticação, neste caso a plataforma \gls{clav}, sendo apenas necessário o envio do \emph{URL} onde origina o pedido\cite{manualAuthGov}.
+    Neste elemento é enviada informação sobre quem está a requisitar a autenticação, neste caso a plataforma \gls{clav}, sendo apenas necessário o envio do \emph{URL} onde origina o pedido\cite{manualAuthGov}.
+    
+    \lstset{
+        language=XML,
+        backgroundcolor=\color{white},
+        basicstyle=\ttfamily,
+        columns=fullflexible,
+        showstringspaces=false,
+        commentstyle=\color{gray}\upshape
+    }
+    \begin{lstlisting}
+<Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+    http://clav-auth.di.uminho.pt
+</Issuer>
+    \end{lstlisting}
+    
+    \vspace{-10mm}
+    \item \textbf{Signature}
+    
+    Neste elemento é realizada a assinatura digital do pedido \gls{saml}, através de métodos de canonização e transformação especificados no manual de integração\cite{manualAuthGov}.
+    
+    Posteriormente à assinatura, é descrito qual o algoritmo utilizado para o cálculo do \emph{DigestValue}, neste caso \emph{SHA-1}, bem como o valor resultante deste processo.
+    
+    Por fim, é adicionado o certificado X.509 contendo a respectiva cadeia de autenticação fornecido pela \gls{ama}.
     
     \lstset{
         language=XML,
@@ -305,21 +414,6 @@ Um pedido de autenticação \emph{(AuthnRequest)} é composto por 3 secções:
         xleftmargin=-27pt,
         xrightmargin=-27pt,
     }
-    \begin{lstlisting}
-        <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
-            http://clav-auth.di.uminho.pt
-        </Issuer>
-    \end{lstlisting}
-    
-    \vspace{-10mm}
-    \item \textbf{Signature}
-    
-    Nesta secção é realizada a assinatura digital do pedido \gls{saml}, através de métodos de canonização\cite{manualAuthGov} e transformação especificados no manual de integração.
-    
-    Posteriormente à assinatura, é transmitida informação sobre o algoritmo utilizado para o cálculo do hash, neste caso \emph{SHA-1}, bem como o valor resultante deste processo de hash.
-    
-    Por fim, é adicionado o certificado X.509 contendo a respectiva cadeia de autenticação fornecido pela \gls{ama}.
-    
     \begin{lstlisting}
 <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
     <SignedInfo>
@@ -352,9 +446,12 @@ Um pedido de autenticação \emph{(AuthnRequest)} é composto por 3 secções:
     \vspace{-10mm}
     \item \textbf{Extensions}
     
-    Esta secção contém os atributos que vamos requisitar ao Autenticação.Gov, aquando da autenticação de um utilizador na plataforma \gls{clav}, neste caso o seu \gls{nic} e Nome Completo.
+    Este elemento contém os atributos que vamos requisitar ao Autenticação.Gov, aquando da autenticação de um utilizador na plataforma \gls{clav}. 
+    
+    Neste caso o seu \gls{nic} e Nome Completo, sendo os atributos requisitados de caráter obrigatório devido ao atributo \emph{isRequired} ser \emph{true}.
     
     \begin{lstlisting}
+    
 <Extensions>
     <fa:RequestedAttributes xmlns:fa="http://autenticacao.cartaodecidadao.pt/atributos">
         <fa:RequestedAttribute 
@@ -370,75 +467,254 @@ Um pedido de autenticação \emph{(AuthnRequest)} é composto por 3 secções:
     \end{lstlisting}
 \end{enumerate}
 
+\cleardoublepage
+\subsubsection{AuthnResponse}
+
+Após a recepção de um pedido \emph{AuthnRequest}, o Autenticação.Gov processa a autenticação do utilizador e retorna um par de estados como resposta.
+
+Tal como o pedido de autenticação \emph{AuthnRequest} explorado na secção \ref{authnRequestSection}, este é escrito na linguagem \gls{saml}.
+
+Outras parecenças com o pedido de autenticação incluem o facto de também possuir o elemento \emph{Issuer}, \emph{Signature} e \emph{Extensions}. Iremos explorar em detalhe os elementos que não foram incluídos na secção \ref{authnRequestSection} bem como os que sofreram alterações quando comparados a um pedido de autenticação \emph{AuthnRequest}:
+
 \lstset{
+    language=XML,
+    backgroundcolor=\color{white},
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+    showstringspaces=false,
+    commentstyle=\color{gray}\upshape
+}
+\begin{lstlisting}
+<Response 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    ID="_3305700e-0ade-44b1-b81f-a10a5841d56b" 
+    InResponseTo="_63f47093-6377-4771-a36e-8bc506cf9e64" 
+    Version="2.0" 
+    IssueInstant="2019-08-21T17:52:40.4910867Z" 
+    Destination="http://clav-test.di.uminho.pt/api/users/callback"
+    xmlns="urn:oasis:names:tc:SAML:2.0:protocol">
+    <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+        ...
+    </Issuer>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        ...
+    </Signature>
+    <Extensions>
+        ...
+    </Extensions>
+    <Status>
+        ...
+    </Status>
+    <Assertion 
+        Version="2.0" 
+        ID="_116a2041-ed1a-445c-8b3f-95baef3f5e00" 
+        IssueInstant="2019-08-21T17:52:40.4910867Z" 
+        xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+        ...
+    </Assertion>
+</Response>
+\end{lstlisting}
+
+\vspace{-7mm}
+O elemento de raiz, \emph{Response}, contém os seguintes atributos, sendo estes de carácter obrigatório numa resposta a um pedido de autenticação \gls{saml}.
+
+\begin{itemize}
+    \item \textbf{ID}
+    
+    Atributo baseado no tipo de dados \emph{xs:ID}\footnote{Definido em: \url{https://www.w3.org/TR/xmlschema-2/\#ID}}. Devido à especificação do Autenticação.Gov, este ID gerado tem de ser precedido de um "\_".
+    
+    \item \textbf{InResponseTo}
+    
+    Atributo cujo valor reflete o \emph{ID} do pedido de autenticação (não confundir com o \emph{ID} da resposta ao pedido de autenticação).
+    
+    \item \textbf{Version}
+    
+    Atributo responsável pela identificação da versão \gls{saml} utilizada neste pedido. Neste caso, o Autenticação.Gov está configurado para apenas funcionar com a versão 2.0.
+    
+    \item \textbf{IssueInstant}
+    
+    Atributo cujo valor identifica a data de emissão da resposta \gls{saml} em formato UTC\footnote{Definido em: \url{http://www.w3.org/TR/xmlschema-2/\#dateTime}}.
+    
+    \item \textbf{Destination}
+    
+    Atributo responsável pelo URL para o qual a resposta \gls{saml} é enviada. É identico ao \emph{AssertionConsumerServiceURL} do pedido de autenticação exemplificado na secção \ref{authnRequestSection}.
+\end{itemize}
+
+Como foi referido no inicio desta secção, uma resposta a um pedido de autenticação \emph{(Response)} é composto por 5 elementos, todas incorporadas dentro de um \emph{Response}:
+
+\begin{enumerate}
+    \item \textbf{Issuer}
+    
+    Neste elemento é enviada informação sobre quem está a responder ao pedido de autenticação, neste caso o URL do serviço responsável pelo Cartão de Cidadão.
+    
+    \lstset{
         language=XML,
         backgroundcolor=\color{white},
         basicstyle=\ttfamily,
         columns=fullflexible,
         showstringspaces=false,
-        commentstyle=\color{gray}\upshape,
-        xleftmargin=-27pt,
-        xrightmargin=-27pt,
+        commentstyle=\color{gray}\upshape
     }
-\begin{lstlisting}
-<AuthnRequest 
-    xmlns="urn:oasis:names:tc:SAML:2.0:protocol"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    ID="_63f47093-6377-4771-a36e-8bc506cf9e64"
-    Version="2.0"
-    IssueInstant="2019-08-20T14:51:18.061Z"
-    Destination="https://preprod.autenticacao.gov.pt/fa/Default.aspx"
-    ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-    AssertionConsumerServiceURL="https://clav-auth.di.uminho.pt/assertion"
-    ProviderName="CLAV" 
-    Consent="urn:oasis:names:tc:SAML:2.0:consent:unspecified">
-    <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
-        http://clav-auth.di.uminho.pt
-    </Issuer>
-    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
-        <SignedInfo>
-            <CanonicalizationMethod Algorithm="http://www.w3.org/2001/xml-exc-c14n"/>
-            <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-            <Reference URI="#_63f47093-6377-4771-a36e-8bc506cf9e64">
-                <Transforms>
-                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
-                    <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-                </Transforms>
-                <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-                <DigestValue>
-                    msbCCbP1sltYLV...oaZ+nNmWwVHqE=
-                </DigestValue>
-            </Reference>
-        </SignedInfo>
-        <SignatureValue>
-            gB656A8kkR7TujX8/xfAfYJm...2EX3iK7rXxAd5HAbvB6zV1BXvDYLJ6K+ZOBGF
-        </SignatureValue>
-        <KeyInfo>
-            <X509Data>
-                <X509Certificate>
-                    9AnXwiE5zOybPs8CAwEAAaOB...BlrBlEXYrXxFdIA7qATy
-                </X509Certificate>
-            </X509Data>
-        </KeyInfo>
-    </Signature>
-    <Extensions>
-        <fa:RequestedAttributes xmlns:fa="http://autenticacao.cartaodecidadao.pt/atributos">
-            <fa:RequestedAttribute 
-                Name="http://interop.gov.pt/MDC/Cidadao/NIC" 
-                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
-                isRequired="True"/>
-            <fa:RequestedAttribute
-                Name="http://interop.gov.pt/MDC/Cidadao/NomeCompleto" 
-                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
-                isRequired="True"/>
-        </fa:RequestedAttributes>
-    </Extensions>
-</AuthnRequest>
-\end{lstlisting}
-
-\cleardoublepage
-\subsubsection{AuthnResponse}
+    \begin{lstlisting}
+<Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+    https://autenticacao.cartaodecidadao.pt
+</Issuer>
+    \end{lstlisting}
+    
+    \item \textbf{Signature}
+    
+    Elemento idêntico ao referido na secção \ref{authnRequestSection}.
+    
+    \item \textbf{Extensions}
+    
+    Neste elemento é devolvido o nível de confiança utilizado pela autenticação previamente realizada. 
+    
+    Como no \emph{AuthnRequest} da secção \ref{authnRequestSection} não foi especificado nenhum nível de confiança, o Autenticação.Gov assume que se trata de nível 4, requerindo para tal a autenticação através de Cartão de Cidadão.
+    
+    \lstset{
+        language=XML,
+        backgroundcolor=\color{white},
+        basicstyle=\ttfamily,
+        columns=fullflexible,
+        showstringspaces=false,
+        commentstyle=\color{gray}\upshape
+        xleftmargin=-35pt,
+        xrightmargin=-35pt,
+    }
+    \begin{lstlisting}
+<Extensions>
+    <fa:FAAALevel xmlns:fa="http://autenticacao.cartaodecidadao.pt/atributos">
+        4
+    </fa:FAAALevel>
+</Extensions>
+    \end{lstlisting}
+    
+    \vspace{-10mm}
+    Além do nível 4, este pode tomar os seguintes valores:
+    
+    \begin{enumerate}
+        \item \textbf{Nível 3}
+        
+        Autenticação com Chave Móvel Digital.
+        
+        \item \textbf{Nível 2}
+        
+        Autenticação com Chave Móvel Digital através do Twitter.
+        
+        \item \textbf{Nível 1}
+        
+        Autenticação com Utilizador/Palavra-passe  e Redes Sociais.
+    \end{enumerate}
+    
+    \item \textbf{Status}
+    
+    Neste elemento é enviada informação relativa ao sucesso ou insucesso do pedido de autenticação. 
+    
+    Caso este tenha sido realizado com sucesso é enviado o seguinte elemento de \emph{Status}:
+    
+    \begin{lstlisting}
+<Status>
+    <StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+</Status>
+    \end{lstlisting}
+    
+    \vspace{-10mm}
+    Caso contrário, alem do atributo de estado de primeiro nível (representado pelo \emph{StatusCode)}, é enviado um segundo nível designado por estado subordinado.
+    
+    Este apenas é obrigatório no caso em que a autenticação falhe, sendo povoado com o motivo pelo qual esta falhou.
+    
+    \begin{lstlisting}
+<Status>
+    <StatusCode  Value="urn:oasis:names:tc:SAML:2.0:status:Responder">
+        <StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:AuthnFailed"/>
+    </StatusCode>
+</Status>
+    \end{lstlisting}
+    
+    \vspace{-10mm}
+    \begin{enumerate}
+        \item \textbf{Estados de primeiro nível}
+        \begin{enumerate}
+            \item \emph{urn:oasis:names:tc:SAML:2.0:status:Success}
+            
+            Este estado é retornado quando a operação de autenticação é realizada com sucesso.
+            
+            \item \emph{urn:oasis:names:tc:SAML:2.0:status:Requester}
+            
+            Este estado é retornado quando ocorre uma falha com o fornecedor de serviços, neste caso a plataforma \gls{clav} e a autenticação não é realizada.
+            
+            \item \emph{urn:oasis:names:tc:SAML:2.0:status:Responder}
+            
+            Este estado é retornado quando ocorre uma falha com o Autenticação.Gov e a autenticação não é realizada.
+        \end{enumerate}
+        
+        \item \textbf{Estados subordinados}
+        \begin{enumerate}
+            \item \emph{urn:oasis:names:tc:SAML:2.0:status:AuthnFailed}
+            
+            Ocorre quando a autenticação falhou por algum motivo alheio ao Autenticação.Gov.
+            Pode ser por um destes vários fatores:
+            
+            \begin{enumerate}
+                \item Utilizador negou leitura do Cartão de Cidadão.
+                \item Utilizador errou o PIN de autenticação.
+                \item Utilizador negou a recolha dos atributos pedidos.
+                \item Utilizador não tem leitor smart-card.
+                \item Utilizador não tem plugin do Autenticação.Gov instalado.
+                \item etc.
+            \end{enumerate}
+            
+            \item \emph{urn:oasis:names:tc:SAML:2.0:status:InvalidAttrNameOrValue}
+            
+            Ocorre quando é requisitado um valor ou atributo inexistente ou inválido.
+            
+            \item \emph{urn:oasis:names:tc:SAML:2.0:status:RequestDenied}
+            
+            Ocorre quando o pedido de autenticação se encontra correto, mas por algum motivo o Autenticação.Gov decidiu optar por não lhe responder.
+            
+            \item \emph{urn:oasis:names:tc:SAML:2.0:status:undefined}
+            
+            Ocorre quando o erro contemplado não se encontra nos listados previamente.
+        \end{enumerate}
+    \end{enumerate}
+    
+    \item \textbf{Assertion}
+    
+    Este elemento contem uma asserção \gls{saml}, ou seja, um pacote de informações de segurança. 
+    
+    Esta asserção especifica que a resposta foi emitida por uma entidade num determinado momento e atesta a identidade da entidade da mesma, desde que as condições especificadas de validação tenham sido satisfeitas.
+    
+    \begin{lstlisting}
+<Assertion>
+    <AttributeStatement>
+        <Attribute 
+            Name="http://interop.gov.pt/MDC/Cidadao/NIC" 
+            NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
+            d4p1:AttributeStatus="Available" 
+            xmlns:d4p1="http://autenticacao.cartaodecidadao.pt/atributos">
+            <AttributeValue xsi:type="xsd:string">
+                12345678
+            </AttributeValue>
+        </Attribute>
+        <Attribute 
+            Name="http://interop.gov.pt/MDC/Cidadao/NomeCompleto" 
+            NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" 
+            d4p1:AttributeStatus="Available" 
+            xmlns:d4p1="http://autenticacao.cartaodecidadao.pt/atributos">
+            <AttributeValue xsi:type="xsd:string">
+                OCTAVIO JOSE AZEVEDO MAIA
+            </AttributeValue>
+        </Attribute>
+    </AttributeStatement>
+</Assertion>
+    \end{lstlisting}
+    
+    \vspace{-10mm}
+    A asserção apenas pode conter um elemento \emph{AttributeStatement}, sendo que este é povoado com os atributos requisitados no pedido de autenticação \emph{AuthnRequest} especificado na secção \ref{authnRequestSection}.
+    
+    Neste caso, foi requisitado o valor do Número de Identificação Cívil (\textbf{12345678}) e o Nome Completo do cidadão (\textbf{OCTAVIO JOSE AZEVEDO MAIA}).
+\end{enumerate}
 
 \cleardoublepage
 \subsection{Especificação do Autenticação.Gov}
