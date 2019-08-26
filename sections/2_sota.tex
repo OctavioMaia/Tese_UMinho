@@ -1085,14 +1085,44 @@ Outro propósito da criação do Cartão de Cidadão foi melhorar o nível de se
 
 O chip presente no Cartão de Cidadão permite guardar dados pessoais do titular, garantindo a privacidade e segurança dos mesmos. Por exemplo, impede acessos indevidos a dados médicos do titular por parte de trabalhadoras da Segurança Social, visto cada entidade só ter acesso aos dados que lhe dizem respeito, de modo a evitar o uso indevido dos dados do titular, bem como uso indevido de poder.
 
-\subsection{Funcionamento do Cartão de Cidadão} \label{funcCC}
+%\subsection{Funcionamento do Cartão de Cidadão} \label{funcCC}
  
-O funcionamento do 
+%O funcionamento do 
 
 \subsection{Especificação do Cartão de Cidadão} \label{espCC}
 
-Este tipo de cartão está dotado de capacidades de processamento bem como memória embutida que permite o armazenamento de uma estrutura \gls{pki}.
+O Cartão de Cidadão segue o padrão designado por \emph{ID-1}\footnote{Mais informações em \url{https://www.iso.org/standard/31432.html}}, sendo este baseado na norma \emph{ISO/IEC 7810} que especifica as dimensões do Cartão de Cidadão, sendo estas de 8,56cm de comprimento e 5,398cm de largura. Além da norma previamente descrita, o Cartão de Cidadão implementa a norma \emph{ISO 7816-2}\footnote{Mais informações em \url{https://www.iso.org/standard/45989.html}} que define a localização e funcionamento do chip do cartão.
 
+O chip presente no Cartão de Cidadão tem de obedecer a inúmeras especificações, sendo que para tal possui as seguintes características:
+
+\begin{enumerate}
+    \item Possui uma memória \gls{eeprom} com 64Kb de memória ou superior.
+    \item É baseado na plataforma \emph{Java Card}, sendo portanto multi-aplicacional.
+    \item Suporta a versão mais recente da plataforma \emph{Java Card}.
+    \item Possui mecanismos capazes de realizar a gestão dinâmica da sua memória, através de "garbage collection" da \gls{jvm}, bem como proteção da mesma.
+    \item Possui mecanismos capazes de gerir o espaço de armazenamento através de desfragmentação.
+    \item Possui mecanismos capazes de gerar números "verdadeiramente" aleatórios.
+    \item Suporta vários códigos PIN baseados na norma \emph{ISO/IEC 7816-4\footnote{Mais informações em \url{https://www.iso.org/standard/54550.html}}}:
+    \begin{enumerate}
+        \item PIN da autenticação.
+        \item PIN da morada.
+        \item PIN da assinatura digital.
+    \end{enumerate}
+    \item Possui mecanismos de bloqueio caso erre na escrita do código PIN.
+    \item Possui mecanismos de desbloqueio através de código \gls{puk}.
+    \item Possui mecanismos de geração de novo código PIN.
+    \item Possui criptografia interna com as seguintes caraterísticas:
+    \begin{enumerate}
+        \item Assinatura e verificação baseadas em \gls{rsa} de 1024bits.
+        \item Assinatura eletrónica baseda na norma \emph{CWA-14169}\footnote{Mais informações em \url{ftp://ftp.cen.eu/CEN/Sectors/TCandWorkshops/Workshops/eSIGN_CWAs/cwa14169-00-2004-Mar.pdf}}.
+        \item Suporte para \gls{md5}, SHA-1 e SHA-256.
+        \item Suporte para \gls{des} e \gls{tdes}\footnote{Mais informações em \url{https://en.wikipedia.org/wiki/Triple_DES}}.
+        \item Suporte para \gls{mac}.
+        \item Suporte para várias normas \gls{pkcs}, nomedamente \emph{PKCS\#1} e\emph{PKCS\#15}.
+    \end{enumerate}
+    \item Suporte para leitores de cartões baseados na norma \gls{cap}.
+    \item Capacidade de defesa contra ataques a nível de hardware.
+\end{enumerate}
 
 \cleardoublepage
 \section{API de dados}
