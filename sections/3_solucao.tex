@@ -45,7 +45,7 @@ Além da obrigatoriedade dos dados prévios, foi também decidido que todos os d
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.75\textwidth]{img/diagramas/authlocal/AuthLocal.png}
-    \caption{Workflow da Autenticação local.}
+    \caption{Workflow da autenticação local.}
     \label{fig:flow_authlocal}
 \end{figure}
 
@@ -79,15 +79,13 @@ A autenticação através de Cartão de Cidadão é baseada na autenticação lo
         A escolha de uma entidade ao qual o utilizador pertence é de caratér obrigatório, não sendo permitido o registo sem a mesma ser selecionada.
 \end{enumerate}
 
-Aquando do registo, a única diferença é que o utilizador registado através de Cartão de CIdadão não possui password, sendo de resto idêntico ao utilizador local.
-
 \cleardoublepage
 \subsection{Workflow da autenticação}
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.695\textwidth]{img/diagramas/authCC/AuthCC.png}
-    \caption{Workflow da Autenticação através de Cartão de Cidadão.}
+    \caption{Workflow da autenticação através de Cartão de Cidadão.}
     \label{fig:flow_authCC}
 \end{figure}
 
@@ -96,5 +94,36 @@ Aquando do registo, a única diferença é que o utilizador registado através d
 
 \subsection{Especificação}
 
+De modo a fornecer uma camada de proteção à \gls{api} de dados, é necessário identificar e autenticar os pedidos que a ela chegam.
 
+Para tal, a solução encontrada foi a implementação de duas funções de middleware responsáveis pela seguinte função:
+
+\begin{enumerate}
+    \item \textbf{Verificação da origem do pedido}
+    
+    Função de middleware cujo funcionamento é baseado em tokens \gls{jwt}. Esta função é executada sempre que há um pedido à \gls{api} e verifica se o pedido obedece aos seguintes critérios:
+
+    \begin{enumerate}
+        \item \textbf{Presença do token}
+        
+        Todo e qualquer pedido à \gls{api} de dados da plataforma \gls{clav}, seja um \emph{GET}, \emph{POST}, entre outros, tem de ser enviado com um token baseado em \gls{jwt}.
+        
+        \item \textbf{Validade do token}
+        
+        Após receção do token, este irá ser descodificado e irá ocorrer a verificação da validade do mesmo, ou seja, se o token é válido e contem o identificador do utilizador que fez o pedido à API.
+    \end{enumerate}
+    
+    \item \textbf{Verificação do nível de acesso}
+    
+    Caso o token seja válido e de facto contem o identificador do utilizador, é verificado o nível de acesso do mesmo. Caso este esteja a tentar aceder a funções da \gls{api} que necessitam de um nível superior ao fornecido, o pedido é negado, caso contrário é permitido o acesso à informação pedida. 
+\end{enumerate}
+
+\cleardoublepage
 \subsection{Workflow da autenticação}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{img/diagramas/authAPI/AuthAPI.png}
+    \caption{Workflow da autenticação de pedidos à API de dados.}
+    \label{fig:flow_authCC}
+\end{figure}
