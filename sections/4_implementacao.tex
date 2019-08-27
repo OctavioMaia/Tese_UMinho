@@ -94,7 +94,7 @@ No gráfico seguinte, podemos ver uma relação entre o factor de custo e o temp
     \end{tikzpicture}
 \end{center}
 
-\cleardoublepage
+%\cleardoublepage
 \subsection{bcrypt no mundo real}
 
 Como foi mencionado nas secções prévias, um dos factos de o \emph{bcrypt} ainda ser utilizado deve-se não só à sua segurança, mas ao facto de acompanhar as evoluções tecnológicas a nível de processamento.
@@ -177,6 +177,7 @@ Infelizmente a resposta é que este ajuste é deveras impossível. O simples aum
 
 Felizmente, tal aplicação de hardware pare este efeito ainda não foi detetada no mundo real e não aparenta qualquer problema de momento.
 
+\cleardoublepage
 \section{Autenticação de utilizadores}
 A autenticação e gestão de utilizadores é feita através da combinação do middleware\footnote{Middleware é um software que funciona como intermediário entre dois programas.} designado por \emph{Passport} e a base de dados não-relacional\footnote{Estilo de base de dados livres de esquema, capazes de maior escalabilidade que as base de dados tradicionais.} implementada em \emph{MongoDB}.
 
@@ -189,16 +190,25 @@ Devido à natureza do \emph{Passport}, este é extremamente fácil de implementa
 
 Devido à natureza das aplicações Web modernas, a autenticação pode ser feita por diversas estratégias. As estratégias exploradas neste projeto recairam sobre a escolha mais "tradicional", uma autenticação local com campos para \emph{username} e \emph{password} e a autenticação com o auxílio da ferramenta Autenticação.Gov.
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{img/clav/paginaAuth.png}
+    \caption{Página responsável pela autenticação na plataforma \gls{clav}.}
+    \label{fig:paginaAutenticacao}
+\end{figure}
+
 Embora exista um aumento exponencial de implementações de autenticação baseadas em redes sociais, através de protocolos desenvolvidos em acordo com o \emph{OAuth}\footnote{Protocolo open-source que permite autenticação de forma standard e segura, entre aplicações desktop, web e mobile.}, tais como \emph{Google+} e \emph{Facebook}, foi decidido desde uma fase inicial que tais estratégias não seriam consideradas devido ao carácter profissional da plataforma.
 
 Devido a cada aplicação possuir necessidades diferentes, o \emph{Passport} guarda cada estratégia de autenticação em módulos independentes, deixando assim a cargo do programador que estratégias empregar, sem criar dependências desnecessárias.
 
-\cleardoublepage
 \subsection{Autenticação através de username e password}
+
+
 
 \cleardoublepage
 \subsection{Autenticação através de Cartão de Cidadão}
 
+\cleardoublepage
 \subsection{Armazenamento e validação de sessões}
 
 De modo a fazer uma gestão de utilizadores mais aprofundada, foi necessário implementar métodos capazes de não só limitar o número de utilizadores ativos a cada dado momento, mas também manter as sessões iniciadas no caso de falha do servidor.
