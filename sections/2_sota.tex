@@ -28,7 +28,7 @@ Em qualquer aplicação no mundo real, é impensável guardar dados sensíveis, 
 Em geral, o \emph{hashing} é caracterizado como uma operação de sentido único, através da qual se gera um resultado único, impossível de reverter para o texto original.
 Embora esta noção esteja correta e seja de facto impossível, através de um texto já processado por uma função de \emph{hash}, reconstruir o texto original em questão, este não é infalível.
 
-\cleardoublepage
+%\cleardoublepage
 \subsection{Vulnerabilidades} \label{vulnerabilidades}
 
 Para exemplificar vulnerabilidades existentes nas funções criptográficas que recorrem apenas ao \emph{hashing} de passwords, vamos recorrer ao algoritmo \textbf{SHA-1}, pertencente à familia de algoritmos \gls{sha}.
@@ -113,13 +113,11 @@ O Autenticação.Gov, em conjunto com o \gls{cc}, também permite fazer uso da f
 
 Através do Autenticação.Gov é possível a criação de credenciais comuns a todos os sites da Administração Pública, assegurando que o utilizador se necessita de autenticar apenas uma única vez para executar um ou vários serviços que podem ser iniciados em portais transversais, sendo este o fundamento do \gls{sso}.
 
-Permite também proceder à autenticação de um utilizador com recursos a outros certificados digitais que não o do Cartão de Cidadão, possibilitando e alargando o leque de autenticação disponível para as Entidades que pretendam delegar a autenticação nesta componente.
-
-Em seguida podemos verificar a quantidade de utilizadores únicos e autenticações realizadas com o auxílio da plataforma \emph{Autenticação.Gov}.
+Permite também proceder à autenticação de um utilizador com recursos a outros certificados digitais que não o do Cartão de Cidadão, possibilitando e alargando o leque de autenticação disponível para as Entidades que pretendam delegar a autenticação nesta componente. De seguida podemos verificar a quantidade de utilizadores únicos e autenticações realizadas com o auxílio da plataforma \emph{Autenticação.Gov}.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/authgov/authgovusage.png}
+    \includegraphics[width=\textwidth]{img/authgov/authgovusage.png}
     \caption{Evolução do número de autenticações realizadas e utilizadores únicos baseados na plataforma \emph{Autenticação.Gov}.\cite{authGovStats}}
 \end{figure}
 
@@ -155,7 +153,7 @@ Relativamente ao âmbito do projecto \gls{clav} irá ser implementada a autentic
     \end{figure}
 \end{itemize}
 
-\cleardoublepage
+%\cleardoublepage
 \subsection{Principais funcionalidades} \label{authGovFuncionalidades}
 
 O Autenticação.Gov é considerado o principal componente para autenticação, a nível nacional e internacional, sendo que as funcionalidades por ele introduzidas permitem a normalização do processo de autenticação e assinatura eletrónica.
@@ -190,7 +188,7 @@ As principais funcionalidades do Autenticação.Gov são as seguintes:
     Sendo o cidadão parte ativa na transmissão de atributos à entidade que o solicita, este tem de dar a sua explícita permissão, podendo negar acesso a certos atributos opcionais, ou até proceder ao cancelamento do processo de autenticação corrente.
 \end{enumerate}
 
-\cleardoublepage
+%\cleardoublepage
 \subsection{Workflow do Autenticação.Gov}
 
 O workflow do processo de autenticação com o Autenticação.Gov cinge-se a dois possíveis cenários:
@@ -211,7 +209,7 @@ De acordo com o manual de Integração do Autenticação.Gov\cite{manualAuthGov}
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{img/authgov/workflow.png}
-    \caption{Workflow de autenticação via Cartão de Cidadão.}
+    \caption{Workflow de autenticação via Cartão de Cidadão\cite{manualAuthGov}.}
     \label{workflow}
 \end{figure}
 
@@ -237,8 +235,8 @@ Esta capacidade de re-autenticação sem nova inserção do PIN de autenticaçã
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/authgov/workflow2.png}
-    \caption{Workflow de re-autenticação via Cartão de Cidadão.}
+    \includegraphics[width=0.85\textwidth]{img/authgov/workflow2.png}
+    \caption{Workflow de re-autenticação via Cartão de Cidadão\cite{manualAuthGov}.}
     \label{workflow2}
 \end{figure}
 
@@ -1114,7 +1112,7 @@ O chip presente no Cartão de Cidadão tem de obedecer a inúmeras especificaç�
     \item Possui criptografia interna com as seguintes caraterísticas:
     \begin{enumerate}
         \item Assinatura e verificação baseadas em \gls{rsa} de 1024bits.
-        \item Assinatura eletrónica baseda na norma \emph{CWA-14169}\footnote{Mais informações em \url{ftp://ftp.cen.eu/CEN/Sectors/TCandWorkshops/Workshops/eSIGN_CWAs/cwa14169-00-2004-Mar.pdf}}.
+        \item Assinatura eletrónica baseada na norma \emph{CWA-14169}\footnote{Mais informações em \url{ftp://ftp.cen.eu/CEN/Sectors/TCandWorkshops/Workshops/eSIGN_CWAs/cwa14169-00-2004-Mar.pdf}}.
         \item Suporte para \gls{md5}, SHA-1 e SHA-256.
         \item Suporte para \gls{des} e \gls{tdes}\footnote{Mais informações em \url{https://en.wikipedia.org/wiki/Triple_DES}}.
         \item Suporte para \gls{mac}.
@@ -1230,5 +1228,5 @@ Embora seja impossível retirar alguma informação útil do \emph{token} exempl
     \end{center}
 \end{itemize}
 
-\cleardoublepage
-\subsection{Vulnerabilidades do JSON Web Token}
+%\cleardoublepage
+%\subsection{Vulnerabilidades do JSON Web Token}
