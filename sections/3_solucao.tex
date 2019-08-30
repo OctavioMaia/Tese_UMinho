@@ -1,11 +1,11 @@
 \cleardoublepage
-\chapter{Solução}
+\chapter{Solução} \label{capituloSolucoes}
 
 Neste capítulo iremos explorar a solução encontrada para os vários desafios e necessidades encontradas ao longo desta dissertação.
 
 \section{Autenticação local}
 
-\subsection{Especificação}
+\subsection{Especificação} \label{especificacaoAuthLocal}
 
 De modo a satisfazer as necessidades da autenticação local de utilizadores, através de username e password, foi decidida a implementação de uma base de dados em \emph{MongoDB}.
 
@@ -32,7 +32,8 @@ A criação de um utilizador na plataforma \gls{clav} obriga ao preenchimento do
     \end{enumerate}
     \item \textbf{Entidade}
     
-        A escolha de uma entidade ao qual o utilizador pertence é de caratér obrigatório, não sendo permitido o registo sem a mesma ser selecionada.
+        A escolha de uma entidade ao qual o utilizador pertence é de caratér obrigatório, não sendo permitido o registo sem a mesma ser selecionada. Para tal efeito, é carregada uma lista com centenas de entidades das quais o utilizador escolherá uma.
+        
     \item \textbf{Password}
     
         Qualquer combinação de números e letras.
@@ -44,7 +45,7 @@ Além da obrigatoriedade dos dados prévios, foi também decidido que todos os d
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.75\textwidth]{img/diagramas/authlocal/AuthLocal.png}
+    \includegraphics[width=0.725\textwidth]{img/diagramas/authlocal/AuthLocal.png}
     \caption{Workflow da autenticação local.}
     \label{fig:flow_authlocal}
 \end{figure}

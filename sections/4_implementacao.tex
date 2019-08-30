@@ -1,5 +1,44 @@
 \chapter{Implementação}
 
+Neste capítulo iremos discutir a implementação das várias soluções descritas no capítulo \ref{capituloSolucoes}. Para tal há que fazer a distinção entre as duas vertentes da plataforma \gls{clav}:
+
+\begin{itemize}
+    \item \textbf{Frontend}
+    
+    O frontend da plataforma \gls{clav} é baseado na linguagem \emph{TypeScript}, uma variante fortemente tipada da linguagem \emph{JavaScript}, sendo utilizado o framework \emph{Vue} para a criação das páginas e interfaces responsáveis pela interação com o utilizador da plataforma.
+    
+    \item \textbf{Backend/API de dados}
+    
+    O backend da plataforma \gls{clav} foi desenvolvido em \emph{Node.JS}, utilizando uma \gls{api} REST para comunicação com o frontend. Este utiliza duas base de dados, cada uma com funções distintas na plataforma:
+    
+    \begin{itemize}
+        \item \textbf{MongoDB}
+        
+        A base de dados não relacional, implementada em \emph{MongoDB} é responsável pelo armazenamento de informação relativa aos utilizadores, chaves \gls{api}, métricas entre outros.
+        
+        \item \textbf{GraphDB}
+        
+        A base de dados em grafos, implementada em \emph{GraphDB} é responsável pelo armazenamento de informação relativa às entidades, legislações, bem como a Lista Consolidada. Devido a se usar uma base de dados em grafos, esta permite cruzar informação de forma extremamente rápida e com pouco impacto no tempo de execução das queries, permitindo assim uma solução flexível, capaz de responder a pedidos específicos de forma rápida.
+    \end{itemize}
+\end{itemize}
+
+Esta decisão de separar o frontend e backend cinge o primeiro a um papel de simples interface com o utilizador, devoluto de qualquer "lógica" aplicacional, ou seja, incapaz de realizar alterações em base de dados ou realizar pedidos à \gls{api}. 
+
+Para obter tais informações, tem de comunicar com o backend, realizando pedidos conforme necessário, processando a resposta dada de modo a interagir com o utilizador. 
+
+\vspace{5mm}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{img/diagramas/sequencia/DiagramasSequencia.png}
+    \caption{Diagrama de sequência ilustrativo da comunicação entre frontend e backend na plataforma \gls{clav}.}
+    \label{fig:diagramaPaginaRestrita}
+\end{figure}
+
+Como podemos ver no diagrama de sequência da figura \ref{fig:diagramaPaginaRestrita}, o frontend serve apenas para interação com o utilizador, sendo que grande porção da lógica aplicacional ocorre no backend, que após terminar a query ou pedido em questão, retorna para o frontend mensagens de sucesso, erro, etc.
+
+Toda e qualquer tarefa, quer seja de registo, login, acesso a informação sobre uma entidade, etc, é realizada sobre uma \gls{api} desenvolvida especificamente para o frontend e backend comunicarem entre si de forma independente e totalmente modular, permitindo correr em servidores diferentes.
+
+\cleardoublepage
 \section{Encriptação de informação sensível} \label{encryption}
 
 De modo a solucionar os problemas referidos na secção \ref{vulnerabilidades}, foi necessário proceder ao desenvolvimento de uma função criptográfica que não só solucionasse o problema relacionado com ataques via \emph{rainbow tables}, mas também fosse capaz de acompanhar os avanços tecnológicos a nível computacional.
@@ -193,7 +232,7 @@ Devido à natureza das aplicações Web modernas, a autenticação pode ser feit
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{img/clav/paginaAuth.png}
-    \caption{Página responsável pela autenticação na plataforma \gls{clav}.}
+    \caption{Página principal de autenticação na plataforma \gls{clav}.}
     \label{fig:paginaAutenticacao}
 \end{figure}
 
@@ -203,7 +242,144 @@ Devido a cada aplicação possuir necessidades diferentes, o \emph{Passport} gua
 
 \subsection{Autenticação através de username e password}
 
+Nesta secção iremos explorar a implementação da autenticação através de username a password, designada por autenticação local. Começaremos por analisar a página de registo, seguida de uma análise do diagrama de sequência da mesma, explicando em detalhe o processo de registo do início ao fim.
 
+\subsubsection{Registo}
+
+O registo local, através de username e password foi implementado com o objetivo de ser intuitivo e simples. 
+%Para tal, foi criada uma página sucinta, onde são indicados os campos necessários para preenchimento.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{img/clav/authlocal/registo.png}
+    \caption{Página de registo na plataforma \gls{clav}.}
+    \label{fig:paginaRegistoLocal}
+\end{figure}
+
+Para tal é utilizado um form, onde é necessário o preenchimento da seguinte informação (como foi especificado na secção \ref{especificacaoAuthLocal}):
+\begin{enumerate}
+    \item Nome.
+    \item Email.
+    \item Entidade.
+    \item Nível de utilizador.
+    \item Password.
+\end{enumerate}
+
+Após submeter o pedido de registo pode ocorrer um dos seguintes cenários:
+
+\begin{itemize}
+    \item \textbf{Sucesso}
+    
+    Ocorre quando o utilizador fornece todos os dados necessários para o seu registo.
+    
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=\textwidth]{img/clav/authlocal/sucessoRegisto.png}
+        \caption{Página quando ocorre um registo com sucesso na plataforma \gls{clav}.}
+        \label{fig:registoSucesso}
+    \end{figure}
+    
+    \item \textbf{Insucesso}
+    
+    \begin{itemize}
+        \item \textbf{Dados insuficientes}
+        
+        Ocorre quando o utilizador não preencheu todos os campos necessários para o registo.
+        
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=\textwidth]{img/clav/authlocal/erroRegisto1.png}
+            \caption{Página quando ocorre um erro de registo na plataforma \gls{clav}.}
+            \label{fig:registoErro1}
+        \end{figure}
+
+        \vspace{5cm}
+        \item \textbf{Email já registado}
+        
+        Ocorre quando o utilizador fornece um email já atribuido a outro utilizador.
+        
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=\textwidth]{img/clav/authlocal/erroRegisto2.png}
+            \caption{Página quando ocorre um erro de registo na plataforma \gls{clav}.}
+            \label{fig:registoErro2}
+        \end{figure}
+        
+    \end{itemize}
+\end{itemize}
+
+O comportamento da função de registo pode ser explicado pelo diagrama de sequência da figura \ref{fig:diagramaRegisto}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{img/diagramas/sequencia/DiagramasSequencia-Registo.png}
+    \caption{Diagrama de sequência correspondente ao processo de registo na plataforma \gls{clav}.}
+    \label{fig:diagramaRegisto}
+\end{figure}
+
+\vspace{-4mm}
+\subsubsection{Login}
+
+Tendo em consideração a página de registo local, foi implementada uma solução similar, apenas com os campos necessários para login, ou seja, email e password.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/clav/authlocal/login.png}
+    \caption{Página de login através de username e password na plataforma \gls{clav}.}
+    \label{fig:paginaLoginLocal}
+\end{figure}
+
+Após submeter o pedido de login pode ocorrer um dos seguintes cenários:
+
+\begin{itemize}
+    \vspace{-2mm}
+    \item \textbf{Sucesso}
+    
+    Ocorre quando o utilizador fornece uma combinação de email e password correta.
+    
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.95\textwidth]{img/clav/authlocal/sucessoLogin.png}
+        \caption{Página quando ocorre um login com sucesso na plataforma \gls{clav}.}
+        \label{fig:registoLogin}
+    \end{figure}
+    
+    \item \textbf{Insucesso}
+    
+    \begin{itemize}
+        \item \textbf{Dados insuficientes}
+        
+        Ocorre quando o utilizador não preencheu todos os campos necessários para o login.
+        
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.95\textwidth]{img/clav/authlocal/erroLogin1.png}
+            \caption{Página quando ocorre um erro de login na plataforma \gls{clav}.}
+            \label{fig:loginErro1}
+        \end{figure}
+        
+        %\cleardoublepage
+        \item \textbf{Dados incorretos}
+        
+        Ocorre quando o utilizador fornece uma combinação de email e password incorreta.
+        
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.95\textwidth]{img/clav/authlocal/erroLogin2.png}
+            \caption{Página quando ocorre um erro de login na plataforma \gls{clav}.}
+            \label{fig:loginErro2}
+        \end{figure}
+    \end{itemize}
+\end{itemize}
+
+O comportamento da função de login pode ser explicado pelo diagrama de sequência da figura \ref{fig:diagramaLogin}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{img/diagramas/sequencia/DiagramasSequencia-Login.png}
+    \caption{Diagrama de sequência correspondente ao processo de login local na plataforma \gls{clav}.}
+    \label{fig:diagramaLogin}
+\end{figure}
 
 \cleardoublepage
 \subsection{Autenticação através de Cartão de Cidadão}
@@ -383,3 +559,5 @@ Esta função recorre a uma chamada à função \emph{isLevel}, sendo passado co
 \end{algorithm}
 
 Com as estratégias de autenticação mencionadas anteriormente podemos assegurar uma correta implementação de níveis de acesso, não sendo possível a utilizadores aceder a conteúdo ao qual não possuem permissão.
+
+\section{Métrica da plataforma CLAV}
