@@ -382,7 +382,88 @@ O comportamento da função de login pode ser explicado pelo diagrama de sequên
 \end{figure}
 
 \cleardoublepage
+\subsubsection{Recuperação de credenciais}
+
+Caso o utilizador se esqueça das suas credenciais, existe uma página de recuperação, indicada na figura \ref{fig:pagRecuperacao}. Nesta página apenas é necessária a inserção do email utilizado para registo.
+
+\vspace{-3mm}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/clav/recuperacao/recuperacao.png}
+    \caption{Página de recuperação de credenciais na plataforma \gls{clav}.}
+    \label{fig:pagRecuperacao}
+\end{figure}
+
+\vspace{-3mm}
+Após inserção do email e subsequente pedido de recuperação de credenciais, pode ocorrer um dos seguintes cenários:
+
+\vspace{-4mm}
+\begin{itemize}
+    \item \textbf{Sucesso}
+    
+    Ocorre quando o utilizador fornece um email presente em base de dados.
+    
+    \vspace{-4mm}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/clav/recuperacao/recuperacaoEnviado.png}
+        \caption{Mensagem de aviso do envio de email de recuperação.}
+        \label{fig:envioEmailRecuperacao}
+    \end{figure}
+    
+    De seguida, é enviado um email para esse destinatário, com um link para recuperação da password. Por questões de segurança este link é válido por 30 minutos, sendo que após esse montante de tempo, o mesmo expira.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/clav/recuperacao/email.png}
+        \caption{Email de recuperação enviado pela plataforma \gls{clav}.}
+        \label{fig:emailRecuperacao}
+    \end{figure}
+    
+    Após aceder ao link de recuperação, é possível alterar a sua password, exemplificado na figura \ref{fig:pagRecuperacaoSucesso}.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/clav/recuperacao/recuperacaoSucesso.png}
+        \caption{Mensagem de sucesso após alteração de password na plataforma \gls{clav}.}
+        \label{fig:pagRecuperacaoSucesso}
+    \end{figure}
+    
+    \cleardoublepage
+    \item \textbf{Insucesso}
+    
+    \begin{itemize}
+        \item \textbf{Dados incorretos}
+        
+        Ocorre quando o utilizador insere um email que não se encontra presente em base de dados.
+        
+        \vspace{-2mm}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{img/clav/recuperacao/erroEmail.png}
+            \caption{Mensagem de erro após inserção de email não existente na plataforma \gls{clav}.}
+            \label{fig:pagRecuperacaoErroEmail}
+        \end{figure}
+        
+        \vspace{-5mm}
+        \item \textbf{Registo através de Cartão de Cidadão}
+        
+        Ocorre quando o utilizador insere um email associado a um registo com o Cartão de Cidadão.
+    
+        \vspace{-2mm}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{img/clav/authCC/erroRecuperacao.png}
+            \caption{Mensagem de erro após tentativa de recuperação de uma conta registada com Cartão de Cidadão.}
+            \label{fig:pagRecuperacaoErroCC}
+        \end{figure}
+    \end{itemize}
+\end{itemize}
+
+\cleardoublepage
 \subsection{Autenticação através de Cartão de Cidadão}
+
+Nesta secção iremos explorar a implementação da autenticação com o Cartão de Cidadão através da ferramenta Autenticação.Gov. Iremos começar por relatar o processo de autenticação, seguido do registo de um novo utilizador, bem como o diagrama de sequência deste processo.
 
 \cleardoublepage
 \subsection{Armazenamento e validação de sessões}
@@ -520,6 +601,9 @@ Outra possibilidade de implementação é descrita a seguir, onde no servidor 3 
 \end{figure}
 
 Cada vez que uma chamada à \gls{api} é feita, irá ser verificado se o \emph{token} dos utilizadores (representados por consumidores na imagem), está presente na lista de chaves pré validadas.
+
+\cleardoublepage
+\subsection{Gestão de utilizadores}
 
 \cleardoublepage
 \section{Autenticação backend}
