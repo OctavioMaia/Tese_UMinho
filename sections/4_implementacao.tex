@@ -460,10 +460,98 @@ Após inserção do email e subsequente pedido de recuperação de credenciais, 
     \end{itemize}
 \end{itemize}
 
+O comportamento da função de registo e login via Cartão de Cidadão pode ser exemplificado pelo seguinte diagrama de sequência:
+
+\vspace{10mm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/diagramas/sequencia/DiagramasSequencia-Recuperacao.png}
+    \caption{Diagrama de sequência relativo ao processo de recuperação na plataforma \gls{clav}.}
+    \label{fig:diagramaSequenciaCC}
+\end{figure}
+
 \cleardoublepage
 \subsection{Autenticação através de Cartão de Cidadão}
 
+\vspace{-5mm}
 Nesta secção iremos explorar a implementação da autenticação com o Cartão de Cidadão através da ferramenta Autenticação.Gov. Iremos começar por relatar o processo de autenticação, seguido do registo de um novo utilizador, bem como o diagrama de sequência deste processo.
+
+Após aceder ao Autenticação.Gov somos abordados com os dados que a plataforma \gls{clav} está a requisitar, tendo este sido abordados na secção \ref{authnRequestSection}.
+
+\vspace{-3mm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/clav/authCC/authgov1.png}
+    \caption{Página principal do Autenticação.Gov.}
+    \label{fig:landingPageAuthGov}
+\end{figure}
+
+\vspace{-3mm}
+De seguida é pedido o PIN de autenticação do nosso Cartão de Cidadão.
+
+\vspace{-3mm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/clav/authCC/authgov2.png}
+    \caption{Pedido de inserção do PIN de autenticação por parte do Autenticação.Gov.}
+    \label{fig:authGovPIN}
+\end{figure}
+
+Após esta etapa podem ocorrer dois cenários:
+
+\begin{itemize}
+    \item \textbf{Sucesso}
+    
+    Ocorre quando o utilizador fornece o PIN de autenticação correto.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{img/clav/authCC/authgov3.png}
+        \caption{Listagem dos dados requisitados pela plataforma \gls{clav}.}
+        \label{fig:listagemDadosCLAV}
+    \end{figure}
+    
+    Após correta inserção do PIN de autenticação, é necessário verificar se já existe algum utilizador registado com o Número de Identificação Civil (\gls{nic}) devolvido pelo Autenticação.Gov.
+    
+    \begin{itemize}
+        \item \textbf{Já existe utilizador registado}
+        
+        É iniciada a sessão com o utilizador correspondente a esse \gls{nic} seguido do redireccionamento do utilizador para a página principal.
+            
+        \item \textbf{Não existe utilizador registado}
+        
+        É feito o redireccionamento para a página de registo de um novo utilizador.
+        
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=\textwidth]{img/clav/authCC/registo.png}
+            \caption{Página de registo de um novo utilizador através do Cartão de Cidadão.}
+            \label{fig:pagRegistoCC}
+        \end{figure}
+    \end{itemize}
+    
+    \item \textbf{Insucesso}
+    
+    Ocorre quando o utilizador introduziu um PIN de autenticação incorreto ou negou o acesso à informação requisitada.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{img/clav/authCC/erroCC.png}
+        \caption{Página de erro resultante de um PIN incorreto ou negação da leitura dos dados pretendidos.}
+        \label{fig:pagRecuperacaoErroCC}
+    \end{figure}
+\end{itemize}
+
+O comportamento da função de registo e login via Cartão de Cidadão pode ser exemplificado pelo seguinte diagrama de sequência:
+
+\vspace{5mm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/diagramas/sequencia/DiagramasSequencia-LoginCC.png}
+    \caption{Diagrama de sequência relativo ao processo de registo e login através de Cartão de Cidadão na plataforma \gls{clav}.}
+    \label{fig:diagramaSequenciaCC}
+\end{figure}
 
 \cleardoublepage
 \subsection{Armazenamento e validação de sessões}

@@ -91,7 +91,7 @@ A autenticação através de Cartão de Cidadão é baseada na autenticação lo
 \end{figure}
 
 \cleardoublepage
-\section{Proteção da API de dados}
+\section{Proteção da API de dados} \label{protecaoAPI}
 
 \subsection{Especificação}
 
@@ -124,7 +124,7 @@ Para tal, a solução encontrada foi a implementação de duas funções de midd
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{img/diagramas/authAPI/AuthAPI.png}
+    \includegraphics[width=0.8\textwidth]{img/diagramas/authAPI/AuthAPI.png}
     \caption{Workflow da autenticação de pedidos à API de dados.}
     \label{fig:flow_authCC}
 \end{figure}
@@ -132,5 +132,65 @@ Para tal, a solução encontrada foi a implementação de duas funções de midd
 \cleardoublepage
 \section{Gestão de utilizadores}
 
+\subsection{Especificação}
+De modo a fornecer uma solução para a gestão de utilizadores, foi sugerida a criação e implementação de uma página que correspondesse a um painel de gestão de utilizadores.
+
+Este painel de gestão terá de suportar as seguintes funcionalidades:
+
+\begin{enumerate}
+    \item Listagem de todos os utilizadores registados na plataforma \gls{clav}.
+    \item Filtragem de utilizadores através de campo de pesquisa.
+    \item Ordenação de utilizadores através dos seguintes parâmetros:
+    \begin{enumerate}
+        \item Nome.
+        \item Entidade.
+        \item Email.
+        \item Nível de utilizador.
+    \end{enumerate}
+\end{enumerate}
+
+Além das funcionalidades previamente descritas, este painel de gestão terá de permitir a edição dos utilizadores em causa, permitindo alterar os parâmetros previamente listados, bem como suportar a desactivação de um utilizador, sendo a este interdito o acesso à plataforma \gls{clav} enquanto não for desbloqueado.
+
+\cleardoublepage
+\subsection{Workflow da edição de um utilizador}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/diagramas/gestaometrica/Edicao.png}
+    \caption{Workflow da edição de um utilizador na plataforma \gls{clav}.}
+    \label{fig:flow_Edicao}
+\end{figure}
+
 \cleardoublepage
 \section{Métrica da plataforma}
+\vspace{-4mm}
+\subsection{Especificação}
+\vspace{-3mm}
+Além das medidas especificadas na secção \ref{protecaoAPI}, foi sugerida a criação de uma página capaz de identificar a quantidade de pedidos processados pela plataforma \gls{clav}.
+
+Para tal, é necessário distinguir entre os possíveis tipo de pedidos existentes na API de dados: 
+\vspace{-3mm}
+\begin{itemize}
+    \item \textbf{GET}.
+    \vspace{-1.5mm}
+    \item \textbf{POST}.
+    \vspace{-1.5mm}
+    \item \textbf{PUT}.
+    \vspace{-1.5mm}
+    \item \textbf{DELETE}.
+\end{itemize}
+
+\vspace{-1mm}
+Além de ser guardado em base de dados o tipo de pedido feito, irá ser guardado a API de qual o pedido originou, quer seja ela a API dos utilizadores, das entidades, classes, etc, de forma a ser possível visualizar graficamente qual é a API mais utilizada.
+
+Este recolher de dados permite também evitar utilizações indevidas da API de dados pública. Por exemplo, um elevado acesso à API pode levar a uma resposta extremamente demorada por parte do servidor, bem como o "crash" total da aplicação devido a esgotamento de recursos. Estes ataques são extremamente comuns e devido à implementação de métrica, é possível os mesmos prevenir de modo a eliminar esse risco.
+
+\vspace{-6mm}
+\subsection{Workflow da incrementação da métrica na plataforma}
+\vspace{-5mm}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.46\textwidth]{img/diagramas/gestaometrica/Metrica.png}
+    \caption{Workflow da incrementação de métrica na plataforma \gls{clav}.}
+    \label{fig:flow_Metrica}
+\end{figure}
