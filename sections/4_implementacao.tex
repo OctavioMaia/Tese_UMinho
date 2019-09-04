@@ -1,4 +1,4 @@
-\chapter{Implementação}
+\chapter{Implementação} \label{implementacao}
 
 Neste capítulo iremos discutir a implementação das várias soluções descritas no capítulo \ref{capituloSolucoes}. Para tal há que fazer a distinção entre as duas vertentes da plataforma \gls{clav}:
 
@@ -262,7 +262,7 @@ Para tal é utilizado um form, onde é necessário o preenchimento da seguinte i
     \item Email.
     \item Entidade.
     \item Nível de utilizador.
-    \item Password.
+    \item Password (encriptada através de \emph{bcrypt}, explicado na secção \ref{encryption}).
 \end{enumerate}
 
 Após submeter o pedido de registo pode ocorrer um dos seguintes cenários:
@@ -460,7 +460,7 @@ Após inserção do email e subsequente pedido de recuperação de credenciais, 
     \end{itemize}
 \end{itemize}
 
-O comportamento da função de registo e login via Cartão de Cidadão pode ser exemplificado pelo seguinte diagrama de sequência:
+O comportamento da função de recuperação pode ser exemplificado pelo seguinte diagrama de sequência:
 
 \vspace{10mm}
 
@@ -468,7 +468,7 @@ O comportamento da função de registo e login via Cartão de Cidadão pode ser 
     \centering
     \includegraphics[width=\textwidth]{img/diagramas/sequencia/DiagramasSequencia-Recuperacao.png}
     \caption{Diagrama de sequência relativo ao processo de recuperação na plataforma \gls{clav}.}
-    \label{fig:diagramaSequenciaCC}
+    \label{fig:diagramaSequenciaRecuperacao}
 \end{figure}
 
 \cleardoublepage
@@ -519,6 +519,7 @@ Após esta etapa podem ocorrer dois cenários:
         
         É iniciada a sessão com o utilizador correspondente a esse \gls{nic} seguido do redireccionamento do utilizador para a página principal.
             
+        \vspace{10mm}
         \item \textbf{Não existe utilizador registado}
         
         É feito o redireccionamento para a página de registo de um novo utilizador.
@@ -564,6 +565,8 @@ Outro fator decisivo contra esta implementação assenta no facto de não ser po
 
 Para tal, foi necessário recorrer a outra abordagem, o armazenamento de sessões em base de dados, neste caso em \emph{MongoDB}.
 
+Esta segunda implementação em \emph{MongoDB}, embora totalmente funcional, teria de ser abandonada devido à divisão da aplicação especificada no capítulo \ref{implementacao}. Assim sendo, as secções \ref{jwt_1} e \ref{armazenamentoMongo} podem ser encaradas como processos iterativos na cadeia de desenvolvimento da plataforma \gls{clav}, sendo a secção \ref{jwt_2} representativa do estado atual do projeto.
+
 \subsubsection{Validação através de JSON Web Token} \label{jwt_1}
 
 Durante o desenvolvimento do projeto \gls{clav} foi discutida a implementação de um mecanismo capaz de terminar sessões automaticamente, de modo a diminuir o número de sessões ativas, bem como evitar possíveis falhas de segurança.
@@ -590,6 +593,7 @@ Para tal, quando a estratégia de login local do \emph{Passport} é invocada, é
 
 \begin{algorithm}
     \caption{Pseudo código da atribuição de um \gls{jwt} à sessão.}
+    \label{algoritmoJWT1}
     \begin{algorithmic}[1]
         \Function{login}{user}
         \State $token \gets jwt.sign({user}, jwt.secret, \{$
@@ -630,7 +634,7 @@ Após corretamente atribuída a sessão a um utilizador, cada vez que o mesmo pr
 Embora esta implementação do \emph{JSON Web Token} estivesse 100\% funcional, a mesma foi abandonada da gestão de utilizadores por uma alternativa similar, o armazenamento de sessões ativas diretamente na base de dados em \emph{MongoDB}, sendo apenas utilizado o \gls{jwt} na autenticação de pedidos à \gls{api}.
 
 \cleardoublepage
-\subsubsection{Armazenamento em MongoDB}
+\subsubsection{Armazenamento em MongoDB} \label{armazenamentoMongo}
 
 O armazenamento de sessões em \emph{MongoDB} permite uma maior flexibilidade comparativamente com o armazenamento local.
 
@@ -659,39 +663,168 @@ Esta configuração do módulo \emph{\textbf{connect-mongo}} faz com que a cada 
 Em suma, o armazenamento de sessões em base de dados possui todas as qualidades da validação via \emph{JSON Web Token}, oferecendo uma maior flexibilidade e customização, sem impacto na performance do servidor.
 
 \cleardoublepage
-\section{Autenticação de pedidos à API de dados}
+\subsubsection{Nova técnica de validação através de JSON Web Token} \label{jwt_2}
 
-De modo a proceder à autenticação de pedidos à \gls{api}, irá ser implementado um sistema baseado em \emph{JSON Web Tokens}.
+Devido à separação do frontend e backend em aplicações distintas, explicada na secção \ref{implementacao}, a existência de uma sessão em base de dados deixa de ser possível. Isto deve-se ao facto do utilizador ter de iniciar sessão no servidor responsável pelo frontend da aplicação, sendo os dados introduzidos enviados para o backend, seguido da resposta do mesmo para o frontend (explicado na figura \ref{fig:diagramaLogin}).
 
-Esta implementação seguirá as normas propostas pelo \emph{"OAuth 2.0 Authorization Framework: Bearer Token Usage"}\cite{rfc6750}, utilizando para o efeito um header HTTP do tipo \emph{Authorization}, com esquema de autenticação \emph{Bearer}\footnote{Mais informação em \url{https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml}}.
+Devido ao envio da informação para outro servidor, esta informação e posterior sessão são armazenadas no servidor do backend e não do frontend. Caso a separação do frontend e backend não tivesse ocorrido, ambos correriam no mesmo servidor e este problema não existiria.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.75\textwidth]{img/jwt/diagramafluxoJWT.png}
-    \caption{Diagrama correspondente à autenticação baseda em tokens. \cite{jwtDiagram}}
-\end{figure}
+Para tal, foi necessário implementar um novo método de validação de sessões, fortemente baseado na autenticação em tokens discutida na secção \ref{jwt_1}.
 
-O sistema de autenticação a ser implementado seguirá o diagrama previamente descrito, ou seja:
+A função de login foi alterada de modo a enviar os seguintes parâmetros:
 
-\begin{enumerate}
-    \item É realizada a autenticação de um elemento externo no nosso servidor.
-    \item Caso a autenticação tenha sucesso, irá ser devolvido um \gls{jwt} que irá servir de \emph{API Key} para a autenticação de chamadas à mesma.
-    \item Cada vez que é feita uma chamada à \gls{api}, o token presente no campo \emph{Authorization} irá ser validado.
-    \item Caso este seja validado com sucesso, irá ser retornado o output da chamada à API solicitada.
-\end{enumerate}
+\begin{itemize}
+    \item \textbf{Token \gls{jwt}}
+    
+    Em vez de guardar toda a informação do utilizador como o algoritmo \ref{algoritmoJWT1} foi decidido que este iria apenas conter o ID do utilizador, sendo realiza uma query à base de dados quando é necessário obter informações sobre o mesmo (o token criado possui 8h de validade).
+    
+    Este comportamento pode ser exemplificado pelo algoritmo \ref{algoritmoJWT2}.
+    
+    \begin{algorithm}
+        \caption{Pseudo código da atribuição de um \gls{jwt} à sessão.}
+        \label{algoritmoJWT2}
+        \begin{algorithmic}[1]
+            \Function{login}{user}
+            \State $token \gets jwt.sign({id: user._id}, jwt.secret, \{$
+            \State \indent $expiresIn : 8h$
+            \State $\}$
+            \State $name \gets user.name$
+            \State $entidade \gets user.entidade$
+            \State $res.send(token,name,entidade)$
+        \EndFunction
+        \end{algorithmic}
+    \end{algorithm}
+        
+    \item \textbf{Nome do utilizador.}
+    
+    %Este parâmetro é utilizado para atribuir o nome do utilizador cuja sessão está iniciada na plataforma \gls{clav}.
+    
+    \item \textbf{Entidade do utilizador.}
+\end{itemize}
 
-Outra possibilidade de implementação é descrita a seguir, onde no servidor 3 (neste caso, o servidor responsável por correr o projeto \gls{clav}), possui uma lista de \emph{API Key} válidas (neste caso, \gls{jwt}).
+Ao receber o token \gls{jwt}, o nome e a entidade do backend, estes são guardados em local storage através do \emph{Vuex Store}. Sempre que uma página é acedida, é verificado se o token ainda não expirou de modo a terminar automaticamente as sessões.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{img/jwt/jwtAPI.png}
-    \caption{Representação da utilização de \emph{JSON Web Token} para autenticação de pedidos à API. \cite{jwtAPI}}
-\end{figure}
-
-Cada vez que uma chamada à \gls{api} é feita, irá ser verificado se o \emph{token} dos utilizadores (representados por consumidores na imagem), está presente na lista de chaves pré validadas.
+Com esta nova técnica de validação e armazenamento de sessões através de tokens \gls{jwt} é possível separar as aplicações em servidores distintos, mantendo também a sessão iniciada em caso de falha de servidor.
 
 \cleardoublepage
-\subsection{Gestão de utilizadores}
+\section{Autenticação de pedidos à API de dados}
+
+Nesta secção iremos explorar a implementação da autenticação de pedidos realizados à API de dados descrita na secção \ref{protecaoAPI}.
+
+A API de dados da plataforma \gls{clav} foi desenvolvida com o intuito de fornecer uma API pública, sem autenticação, e outra carente de autenticação, a ser utilizada por fornecedores de serviços que queiram desenvolver aplicações ou outros serviços que requerem a obtenção de dados da plataforma.
+
+Assim sendo, nesta secção iremos analisar a página de registo de uma chave API para os fornecedores de serviços, bem como a renovação da mesma, e como esta autenticação é processada no backend.
+
+\subsection{Registo} \label{registoChaveApi}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/clav/authAPI/registar.png}
+    \caption{Página de registo de uma chave API na plataforma \gls{clav}.}
+    \label{fig:registoChaveAPI}
+\end{figure}
+
+O registo de uma chave API por parte de um fornecedor de serviços requer o preenchimento da seguinte informação:
+
+\begin{enumerate}
+    \item Nome.
+    \item Email (este tem de ser válido de modo a permitir a renovação da chave API).
+    \item Entidade (informação da entidade que está a requisitar a chave API).
+\end{enumerate}
+
+Após submeter o pedido de registo de uma chave API é enviado para o email especificado a informação relativa à chave API emitida para a entidade/fornecedor de serviços em questão.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/clav/authAPI/emailRegisto.png}
+    \caption{Email de registo contendo uma chave API da plataforma \gls{clav}.}
+    \label{fig:emailRegistoChaveApi}
+\end{figure}
+
+Como podemos verificar na figura \ref{fig:emailRegistoChaveApi}, a chave API possui uma validade de 30 dias, após a qual é necessário renovar a mesma de modo a continuar a utilizar a API. Além disso, é enviada a chave em formato de um token \gls{jwt}, bem como a maneira correta de enviar o token para processamento pelo backend a cada pedido realizado.
+
+\subsection{Renovação}
+
+Como explicado na secção \ref{registoChaveApi}, a chave API apenas possui uma validade de 30 dias. Esta foi implementada de modo a diminuir potenciais abusos ou pedidos excessivos por parte de um fornecedor de serviços, bem como estudar a utilização da chave API, identificando a origem dos pedidos que mais tráfego geram, entre outras medidas.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/clav/authAPI/renovar.png}
+    \caption{Página de renovação de uma chave API na plataforma \gls{clav}.}
+    \label{fig:renovarChaveAPI}
+\end{figure}
+
+De modo a renovar a chave API apenas é necessário introduzir o email utilizado para o registo da mesma, podendo ocorrer um de dois cenários:
+
+\begin{itemize}
+    \item \textbf{Sucesso}
+    
+    Ocorre quando o utilizador insere um email associado a uma chave API.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\textwidth]{img/clav/authAPI/sucessoRenovacao.png}
+        \caption{Mensagem de sucesso após fornecer um email correto para renovação de uma chave API na plataforma \gls{clav}.}
+        \label{fig:renovarChaveApiSucesso}
+    \end{figure}
+    
+    Após ser introduzido um email correto é enviado um email contendo um URL para renovação da chave API em causa.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\textwidth]{img/clav/authAPI/emailRenovar.png}
+        \caption{Email de renovação contendo a nova chave API da plataforma \gls{clav}.}
+        \label{fig:emailRenovacaoChaveApi}
+    \end{figure}
+    
+    Após recepção do email, basta aceder ao URL presente no email e será enviada uma nova chave API, sendo a chave anterior desativada.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\textwidth]{img/clav/authAPI/sucessoRenovacao2.png}
+        \caption{Mensagem de sucesso após clicar no link de renovação de uma chave API na plataforma \gls{clav}.}
+        \label{fig:renovarChaveApiSucesso2}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\textwidth]{img/clav/authAPI/emailNovaChave.png}
+        \caption{Email de renovação contendo a nova chave API da plataforma \gls{clav}.}
+        \label{fig:emailNovaChave}
+    \end{figure}
+
+    \item \textbf{Insucesso}
+    
+    Ocorre quando o utilizador fornece um email incorreto, ou seja, não associado a uma chave API.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\textwidth]{img/clav/authAPI/erroRenovacao.png}
+        \caption{Mensagem de erro após fornecer um email incorreto para renovação de uma chave API na plataforma \gls{clav}.}
+        \label{fig:renovarChaveApiSucesso}
+    \end{figure}
+\end{itemize}
+
+\cleardoublepage
+O comportamento da função de registo da chave API pode ser exemplificado pelo seguinte diagrama de sequência:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.87\textwidth]{img/diagramas/sequencia/DiagramasSequencia-RegistoAPI.png}
+    \caption{Diagrama de sequência relativo ao processo de registo de uma chave API na plataforma \gls{clav}.}
+    \label{fig:diagramaSequenciaRegistoAPI}
+\end{figure}
+\vspace{-5mm}
+O comportamento da função de renovação da chave API pode ser exemplificado pelo seguinte diagrama de sequência:
+\vspace{-2mm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.87\textwidth]{img/diagramas/sequencia/DiagramasSequencia-RenovacaoAPI.png}
+    \caption{Diagrama de sequência relativo ao processo de renovação de uma chave API na plataforma \gls{clav}.}
+    \label{fig:diagramaSequenciaRenovacaoAPI}
+\end{figure}
+
+\cleardoublepage
+\section{Gestão de utilizadores}
 
 \cleardoublepage
 \section{Autenticação backend}
