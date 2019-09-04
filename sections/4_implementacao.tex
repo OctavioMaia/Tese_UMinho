@@ -555,6 +555,46 @@ O comportamento da função de registo e login via Cartão de Cidadão pode ser 
 \end{figure}
 
 \cleardoublepage
+\section{Gestão de utilizadores}
+
+Com o previsto aumento exponencial do número de utilizadores da plataforma \gls{clav}, foi necessário proceder à implementação de um mecanismo capaz e gerir, editar e possivelmente desativar certos utilizadores. Para tal, foi desenvolvida a seguinte página, de acordo com as especificações documentadas na secção \ref{gestaoUtilizadoresSolucao}.
+\vspace{-3mm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.875\textwidth]{img/clav/gestao/listagem.png}
+    \caption{Página de listagem de todos os utilizadores da plataforma \gls{clav}.}
+    \label{fig:pagListagemUtilizadores}
+\end{figure}
+
+\vspace{-5mm}
+Após listar todos os utilizadores é possivel ordenar através de nome, entidade, email ou nível de utilizador, bem como editar o utilizador correspondente através do icone da direita (representado por um lápis).
+\vspace{-3mm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.875\textwidth]{img/clav/gestao/edicao.png}
+    \caption{Página de edição de um utilizador da plataforma \gls{clav}.}
+    \label{fig:pagEdicaoUtilizador}
+\end{figure}
+
+Após clicar no icon de edição é possivel editar os seguintes campos:
+
+\begin{itemize}
+    \item Nome.
+    \item Email.
+    \item Entidade.
+    \item Nível do utilizador.
+\end{itemize}
+
+O comportamento da função de listagem e edição de utilizadores pode ser exemplificado pelo seguinte diagrama de sequência:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/diagramas/sequencia/DiagramasSequencia-GestaoUtilizadores.png}
+    \caption{Diagrama de sequência relativo à gestão e edição de utilizadores na plataforma \gls{clav}.}
+    \label{fig:diagramaSequenciaGestaoUtilizadores}
+\end{figure}
+
+\cleardoublepage
 \subsection{Armazenamento e validação de sessões}
 
 De modo a fazer uma gestão de utilizadores mais aprofundada, foi necessário implementar métodos capazes de não só limitar o número de utilizadores ativos a cada dado momento, mas também manter as sessões iniciadas no caso de falha do servidor.
@@ -707,7 +747,7 @@ Ao receber o token \gls{jwt}, o nome e a entidade do backend, estes são guardad
 Com esta nova técnica de validação e armazenamento de sessões através de tokens \gls{jwt} é possível separar as aplicações em servidores distintos, mantendo também a sessão iniciada em caso de falha de servidor.
 
 \cleardoublepage
-\section{Autenticação de pedidos à API de dados}
+\section{Autenticação de pedidos à API de dados} \label{autenticaoPedidos}
 
 Nesta secção iremos explorar a implementação da autenticação de pedidos realizados à API de dados descrita na secção \ref{protecaoAPI}.
 
@@ -824,7 +864,47 @@ O comportamento da função de renovação da chave API pode ser exemplificado p
 \end{figure}
 
 \cleardoublepage
-\section{Gestão de utilizadores}
+\section{Gestão de chaves API}
+
+Devido ao elevado número de chaves API que irão ser emitidas pela plataforma \gls{clav} (explicado na secção \ref{autenticaoPedidos}), foi necessária proceder à criação de uma página capaz de gerir as chaves emitidas.
+
+Para tal foi desenvolvida a seguinte página de gestão, onde é possível ver todas as chaves emitidas, sendo possível ordenar por chave, nome da entidade que requisitou a chave, entidade, contacto, bem como o estado da chave e as suas datas de criação e expiração.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/clav/gestaoAPI/listagemChaves.png}
+    \caption{Página de listagem de todas as chaves API emitidas pela plataforma \gls{clav}.}
+    \label{fig:listagemChavesAPI}
+\end{figure}
+
+Além de listar as chaves, é necessário fornecer mecanismos capazes de editar a informação nela contida, nomeadamente o nome, entidade e contacto de quem a requisitou. Além destes mecanismos de edição é necessário fornecer as seguintes funcionalidades:
+
+\begin{itemize}
+    \item \textbf{Desativar chave API}
+    
+    A opção de desativar uma chave API é necessária devido a possíveis usos incorretos da mesma. Caso um utilizador seja suspeito de usar a chave de forma incorreta, esta poderá ser desativada para investigação, não podendo ser utilizada para pedidos à API até ser reativada.
+    
+    \item \textbf{Eliminar chave API}
+    
+    Caso se comprove que uma chave está de facto a ser utilizada de forma indevida, esta pode ser permanentemente eliminada da plataforma \gls{clav}.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/clav/gestaoAPI/editarChave.png}
+    \caption{Página de edição de uma chave API emitida pela plataforma \gls{clav}.}
+    \label{fig:edicaoChavesAPI}
+\end{figure}
+
+\vspace{-5mm}
+O comportamento da função de listagem e edição de chaves API pode ser exemplificado pelo seguinte diagrama de sequência:
+\vspace{-2mm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{img/diagramas/sequencia/DiagramasSequencia-GestaoAPI.png}
+    \caption{Diagrama de sequência relativo à gestão e edição de chaves API na plataforma \gls{clav}.}
+    \label{fig:diagramaSequenciaGestaoAPI}
+\end{figure}
 
 \cleardoublepage
 \section{Autenticação backend}
@@ -865,4 +945,51 @@ Esta função recorre a uma chamada à função \emph{isLevel}, sendo passado co
 
 Com as estratégias de autenticação mencionadas anteriormente podemos assegurar uma correta implementação de níveis de acesso, não sendo possível a utilizadores aceder a conteúdo ao qual não possuem permissão.
 
+O comportamento desta função de middleware pode ser descrita através do diagrama de sequência da figura \ref{fig:diagramaPaginaRestrita}.
+
+\cleardoublepage
 \section{Métrica da plataforma CLAV}
+
+Como foi especificado na secção \ref{solucaoMetrica}, foi implementado um mecanismo capaz de reconhecer e processar os dados provenientes da utilização da API de dados.
+
+Para tal, foi criada uma coleção em \emph{MongoDB} contendo as diversas rotas API da plataforma \gls{clav}, como por exemplo:
+
+\begin{itemize}
+    \item \textbf{/api/users}
+    \item \textbf{/api/tipologias}
+    \item \textbf{/api/entidades}
+    \item \textbf{/api/chaves}
+    \item etc.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/clav/metrica/metrica.png}
+    \caption{Página responsável pela visualização da métrica sobre a plataforma \gls{clav}.}
+    \label{fig:metricaCLAV}
+\end{figure}
+
+Cada uma destas rotas tem associado três contadores identificados de seguida:
+
+\begin{enumerate}
+    \item \textbf{nCallsGet}
+    
+    Contador responsável por guardar o número de pedidos \emph{GET} realizados sobre aquela API.
+    
+    \item \textbf{nCallsPost}
+    
+    Contador responsável por guardar o número de pedidos \emph{POST} realizados sobre aquela API.
+    
+    \item \textbf{nCallsPut}
+    
+    Contador responsável por guardar o número de pedidos \emph{PUT} realizados sobre aquela API.
+\end{enumerate}
+
+O comportamento da função responsável por incrementar o número de chamadas à API pode ser exemplificado pelo seguinte diagrama de sequência:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/diagramas/sequencia/DiagramasSequencia-Metrica.png}
+    \caption{Diagrama de sequência relativo ao processo de recolha de métricas na plataforma \gls{clav}.}
+    \label{fig:diagramaSequenciaMetrica}
+\end{figure}
