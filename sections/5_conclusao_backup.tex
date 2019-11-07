@@ -1,0 +1,13 @@
+\chapter{Conclusões e Trabalho futuro}
+
+Hoje em dia, com o contínuo crescimento de ataques informáticos, bem como fugas de informação sensível, é necessário cada vez mais reforçar os meios de protecção existentes, de modo a não só prevenir, mas evitar ao máximo que os mesmos se repitam.
+
+Para tal, a escrita desta pré-dissertação baseou-se na documentação dos diversos métodos de segurança e autenticação impostos no desenvolvimento do projecto \gls{clav}.
+
+Foram exploradas diversas noções de encriptação, bem como vulnerabilidades existentes e possíveis soluções às mesmas. Após explorada esta vertente foi realizada uma breve introdução ao \emph{bcrypt} e ao seu funcionamento, bem como uma introdução a possíveis vulnerabilidades utilizando hardware especializado.
+
+Após concluída esta etapa, foi realizada uma leitura sobre a ferramenta \emph{Autenticação.Gov}, desenvolvida pela \gls{ama}. Esta ferramenta permite a autenticação em diversos serviços utilizando o Cartão de Cidadão, entre outras alternativas. Foi feita uma breve introdução ao standard \gls{saml}, sendo este necessário para a correta implementação dos serviços previamente mencionados.
+
+Por fim foi introduzida a noção de \emph{JSON Web Token} e o papel crucial que desempenham para o âmbito do projecto, a autenticação de chamadas à \gls{api} de dados.
+
+Como trabalho futuro, irá ser aprofundado o estudo realizado sobre o standard \gls{saml}, após o qual irão ser implementados mecanismos de autenticação baseados no \emph{Autenticação.Gov} (sendo estes realizados por Cartão de Cidadão e Chave Móvel Digital), bem como a implementação de autenticação via \gls{jwt} aos pedidos referentes à \gls{api}. Por fim, irá ser feito um novo estudo sobre os métodos de autenticação e segurança já implementados, podendo ser realizada uma melhoria dos mesmos

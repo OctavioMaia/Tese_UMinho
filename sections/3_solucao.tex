@@ -26,13 +26,14 @@ A criação de um utilizador na plataforma \gls{clav} obriga ao preenchimento do
         \item Administrador de Perfil Funcional
         \item Utilizador Validador
         \item Utilizador Avançado
+        \item Utilizador Decisor (AD)
         \item Utilizador Decisor
         \item Utilizador Simples
         \item Representante Entidade
     \end{enumerate}
     \item \textbf{Entidade}
     
-        A escolha de uma entidade ao qual o utilizador pertence é de caratér obrigatório, não sendo permitido o registo sem a mesma ser selecionada. Para tal efeito, é carregada uma lista com centenas de entidades das quais o utilizador escolherá uma.
+        A escolha de uma entidade ao qual o utilizador pertence é de caratér obrigatório, não sendo permitido o registo sem a mesma ser selecionada. Para tal efeito, é carregada a lista de entidades já registadas no sistema das quais o utilizador escolherá uma.
         
     \item \textbf{Password}
     
@@ -42,10 +43,10 @@ A criação de um utilizador na plataforma \gls{clav} obriga ao preenchimento do
 Além da obrigatoriedade dos dados prévios, foi também decidido que todos os dados relativos aos utilizadores iriam ser guardados numa coleção MongoDB com o nome "\emph{users}".
 
 \subsection{Workflow da autenticação}
-
+\vspace{-5mm}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.725\textwidth]{img/diagramas/authlocal/AuthLocal.png}
+    \includegraphics[width=0.7\textwidth]{img/diagramas/authlocal/AuthLocal.png}
     \caption{Workflow da autenticação local.}
     \label{fig:flow_authlocal}
 \end{figure}
@@ -71,6 +72,7 @@ A autenticação através de Cartão de Cidadão é baseada na autenticação lo
         \item Administrador de Perfil Funcional
         \item Utilizador Validador
         \item Utilizador Avançado
+        \item Utilizador Decisor (AD)
         \item Utilizador Decisor
         \item Utilizador Simples
         \item Representante Entidade
@@ -183,7 +185,7 @@ Para tal, é necessário distinguir entre os possíveis tipo de pedidos existent
 \vspace{-1mm}
 Além de ser guardado em base de dados o tipo de pedido feito, irá ser guardado a API de qual o pedido originou, quer seja ela a API dos utilizadores, das entidades, classes, etc, de forma a ser possível visualizar graficamente qual é a API mais utilizada.
 
-Este recolher de dados permite também evitar utilizações indevidas da API de dados pública. Por exemplo, um elevado acesso à API pode levar a uma resposta extremamente demorada por parte do servidor, bem como o "crash" total da aplicação devido a esgotamento de recursos. Estes ataques são extremamente comuns e devido à implementação de métrica, é possível os mesmos prevenir de modo a eliminar esse risco.
+Este recolher de dados permite também evitar utilizações indevidas da API de dados pública. Por exemplo, um elevado acesso à API pode levar a uma resposta extremamente demorada por parte do servidor, bem como o "crash" total da aplicação devido a esgotamento de recursos. Estes ataques são extremamente comuns e devido à implementação de métrica, é possível prevenir os mesmos de modo a eliminar esse risco.
 
 \vspace{-6mm}
 \subsection{Workflow da incrementação da métrica na plataforma}
@@ -194,3 +196,13 @@ Este recolher de dados permite também evitar utilizações indevidas da API de 
     \caption{Workflow da incrementação de métrica na plataforma \gls{clav}.}
     \label{fig:flow_Metrica}
 \end{figure}
+
+\section{Síntese}
+
+Uma das principais necessidades desta dissertação recaiu na documentação de todo o processo de desenvolvimento. 
+
+Esta documentação tem como objetivo explicar de forma explícita e com alto detalhe toda a arquitetura aplicacional implementada no projeto \gls{clav}, sendo que para tal foram utilizados diagramas de fluxo que explicam de forma clara esta mesma solução.
+
+O principal foco deste capítulo baseou-se na autenticação de utilizadores, quer por autenticação local, bem como por Cartão de Cidadão através do Autenticação.Gov e da protecção da API de dados disponibilizada ao público.
+
+No seguinte capítulo irá ser descrita a implementação utilizada nas vertentes da plataforma \gls{clav}.

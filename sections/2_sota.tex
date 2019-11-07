@@ -25,7 +25,7 @@ Em qualquer aplicação no mundo real, é impensável guardar dados sensíveis, 
     \caption{Representação de uma função de \emph{hash}.\cite{hashFunction}}
 \end{figure}
 
-Em geral, o \emph{hashing} é caracterizado como uma operação de sentido único, através da qual se gera um resultado único, impossível de reverter para o texto original.
+Em geral, o \emph{hashing} é caraterizado como uma operação de sentido único, através da qual se gera um resultado único, impossível de reverter para o texto original.
 Embora esta noção esteja correta e seja de facto impossível, através de um texto já processado por uma função de \emph{hash}, reconstruir o texto original em questão, este não é infalível.
 
 %\cleardoublepage
@@ -105,7 +105,7 @@ Em suma, o método de autenticação ideal deve implementar ambos estes métodos
 \cleardoublepage
 \section{Autenticação.Gov} \label{infoAuthGov}
 
-O Autenticação.Gov surge da necessidade de identificação unívoca de um utilizador perante sítios na Web. Cabe a esta solução o processo de autenticação e o fornecimento dos atributos do utilizador necessários a que cada entidade possa efectuar a identificação do utilizador.
+O Autenticação.Gov surge da necessidade de identificação unívoca de um utilizador perante sítios na Web. Cabe a esta solução o processo de autenticação e o fornecimento dos atributos do utilizador necessários a que cada entidade possa efetuar a identificação do utilizador.
 
 O Autenticação.Gov, em conjunto com o \gls{cc}, também permite fazer uso da funcionalidade de Federação de Identidades da \gls{iap} para a identificação sectorial de um Cidadão, isto é, a obtenção dos seus identificadores junto das entidades participantes da iniciativa do Cartão de Cidadão. 
 
@@ -128,7 +128,7 @@ Permite também proceder à autenticação de um utilizador com recursos a outro
 \end{figure}
 
 
-Relativamente ao âmbito do projecto \gls{clav} irá ser implementada a autenticação através dos seguintes meios de autenticação:
+No âmbito do projeto \gls{clav} irá ser implementada a autenticação através dos seguintes meios de autenticação:
 
 \begin{itemize}
     \item \textbf{Obrigatório: } Cartão de Cidadão (\gls{cc})
@@ -158,7 +158,7 @@ Relativamente ao âmbito do projecto \gls{clav} irá ser implementada a autentic
 
 O Autenticação.Gov é considerado o principal componente para autenticação, a nível nacional e internacional, sendo que as funcionalidades por ele introduzidas permitem a normalização do processo de autenticação e assinatura eletrónica.
 
-Esta autenticação permite às entidades que a requisitam a recolha de informação do utilizado, sendo esta sempre autorizada pelo mesmo.
+Esta autenticação permite às entidades que a requisitam a recolha de informação do utilizador, sendo esta sempre autorizada pelo mesmo.
 
 As principais funcionalidades do Autenticação.Gov são as seguintes:
 
@@ -204,7 +204,7 @@ O workflow do processo de autenticação com o Autenticação.Gov cinge-se a doi
 \end{enumerate}
 
 \subsubsection{Primeira autenticação}
-De acordo com o manual de Integração do Autenticação.Gov\cite{manualAuthGov} providenciado pela \gls{ama}, existem 4 interacções entre o \emph{Autenticação.Gov} e a entidade/serviço a aceder, especificadas na figura \ref{workflow}.
+De acordo com o manual de Integração do Autenticação.Gov\cite{manualAuthGov} providenciado pela \gls{ama}, existem 4 interações entre o \emph{Autenticação.Gov} e a entidade/serviço a aceder, especificadas na figura \ref{workflow}.
 
 \begin{figure}[h]
     \centering
@@ -243,7 +243,7 @@ Esta capacidade de re-autenticação sem nova inserção do PIN de autenticaçã
 \begin{enumerate}
     \setcounter{enumi}{4}
     \item É feito o acesso a uma nova entidade, neste caso a plataforma \gls{clav}, tendo o utilizador feito a autenticação na entidade prévia.
-    \item O site da entidade revalida a credencial electrónica junto do Autenticação.Gov.
+    \item O site da entidade revalida a credencial eletrónica junto do Autenticação.Gov.
     \item Cabe ao Autenticação.Gov re-emitir ou revalidar a credencial consoante os seguintes dois casos:
     \begin{enumerate}
         \item Se forem solicitados os mesmos atributos da última autenticação e estes tenham sido obtidos com um nível de confiança igual ou superior, não será necessária nova introdução de PIN.
@@ -257,7 +257,7 @@ Através desta implementação de renovação de autenticação, é assegurada a
 \cleardoublepage
 \subsection{Funcionamento do Autenticação.Gov} \label{funcAuthGov}
 
-De modo a utilizar o Autenticação.Gov é necessária a criação de um pedido baseado em \gls{saml}, assinado digitalmente com um certificado X.509 e encriptado com a nossa chave \gls{rsa} privada, bem como a respectiva cadeia de autenticação.
+De modo a utilizar o Autenticação.Gov é necessária a criação de um pedido baseado em \gls{saml}, assinado digitalmente com um certificado X.509 e encriptado com a nossa chave \gls{rsa} privada, bem como a respetiva cadeia de autenticação.
 
 Existem dois tipos de pedidos \gls{saml} utilizados pelo Autenticação.Gov:
 
@@ -325,7 +325,7 @@ Contidos dentro do \emph{AuthnRequest} está o elemnto \emph{Issuer}, o elemento
 \end{lstlisting}
 
 \vspace{-7mm}
-O elemento de raiz, \emph{AuthnRequest}, contém os seguintes atributos, sendo estes de carácter obrigatório para a correta criação de um pedido de autenticação \gls{saml}.
+O elemento de raiz, \emph{AuthnRequest}, contém os seguintes atributos, sendo estes de caráter obrigatório para a correta criação de um pedido de autenticação \gls{saml}.
 
 \begin{itemize}
     \item \textbf{ID}
@@ -400,7 +400,7 @@ Como foi referido no inicio desta secção, um pedido de autenticação \emph{(A
     
     Posteriormente à assinatura, é descrito qual o algoritmo utilizado para o cálculo do \emph{DigestValue}, neste caso \emph{SHA-1}, bem como o valor resultante deste processo.
     
-    Por fim, é adicionado o certificado X.509 contendo a respectiva cadeia de autenticação fornecido pela \gls{ama}.
+    Por fim, é adicionado o certificado X.509 contendo a respetiva cadeia de autenticação fornecido pela \gls{ama}.
     
     \lstset{
         language=XML,
@@ -515,7 +515,7 @@ Outras parecenças com o pedido de autenticação incluem o facto de também pos
 \end{lstlisting}
 
 \vspace{-7mm}
-O elemento de raiz, \emph{Response}, contém os seguintes atributos, sendo estes de carácter obrigatório numa resposta a um pedido de autenticação \gls{saml}.
+O elemento de raiz, \emph{Response}, contém os seguintes atributos, sendo estes de caráter obrigatório numa resposta a um pedido de autenticação \gls{saml}.
 
 \begin{itemize}
     \item \textbf{ID}
@@ -836,7 +836,7 @@ O protocolo \gls{ssl} (Secure Sockets Layer), possui a simples tarefa de encript
 \vspace{5mm}
 \textbf{Mas como é que o protocolo \gls{ssl} funciona?}
 
-De modo a garantir um alto nível de privacidade, o \gls{ssl} encripta todos os dados que são transmitidos pela Internet. Isto significa que de qualquer tentativa de intercepção destes dados irá resultar um conjunto de caracteres aleatórios, sendo estes quase impossíveis de desencriptar.
+De modo a garantir um alto nível de privacidade, o \gls{ssl} encripta todos os dados que são transmitidos pela Internet. Isto significa que de qualquer tentativa de intercepção destes dados irá resultar um conjunto de carateres aleatórios, sendo estes quase impossíveis de desencriptar.
 
 Quando corre um acesso a uma página web configurada com protocolo \gls{ssl}, este inicia um processo designado por "\emph{handshake}" entre os dois dispositivos, Utilizador e Servidor, de modo a garantir e verificar a identidade de ambos.
 
@@ -868,7 +868,7 @@ O processo de "\gls{ssl} \emph{handshake}" pode ser resumido a 8 simples passos:
     
     \item \textbf{Server Hello}
     
-    De seguida, o servidor envia para o cliente um \textit{"ServerHello"} de modo a confirmar as opções da conexão \gls{ssl}. É de referir que é neste passo que pode ocorrer a primeira negação da conexão \gls{ssl} devido aos seguintes factores:
+    De seguida, o servidor envia para o cliente um \textit{"ServerHello"} de modo a confirmar as opções da conexão \gls{ssl}. É de referir que é neste passo que pode ocorrer a primeira negação da conexão \gls{ssl} devido aos seguintes fatores:
     
     \begin{enumerate}
         \item \textbf{Incompatibilidade de protocolo}
@@ -1010,7 +1010,7 @@ De modo a garantir a validade do certificado, as seguintes regras têm de ser ob
     \item Todos os certificados da sua cadeia de certificação têm de ser válidos.
 \end{enumerate}
 
-Um objecto contendo as características previamente descritas pode ser representado através do padrão \emph{X.509}, sendo este utilizado como suporte para a \gls{pki} (Public Key Infrastucture).
+Um objeto contendo as caraterísticas previamente descritas pode ser representado através do padrão \emph{X.509}, sendo este utilizado como suporte para a \gls{pki} (Public Key Infrastucture).
 
 A estrutura definida pela \gls{pki} é utilizada de forma universal para a autenticação de utilizadores através de certificados de chave pública.\cite{pki}
 
@@ -1091,7 +1091,7 @@ O chip presente no Cartão de Cidadão permite guardar dados pessoais do titular
 
 O Cartão de Cidadão segue o padrão designado por \emph{ID-1}\footnote{Mais informações em \url{https://www.iso.org/standard/31432.html}}, sendo este baseado na norma \emph{ISO/IEC 7810} que especifica as dimensões do Cartão de Cidadão, sendo estas de 8,56cm de comprimento e 5,398cm de largura. Além da norma previamente descrita, o Cartão de Cidadão implementa a norma \emph{ISO 7816-2}\footnote{Mais informações em \url{https://www.iso.org/standard/45989.html}} que define a localização e funcionamento do chip do cartão.
 
-O chip presente no Cartão de Cidadão tem de obedecer a inúmeras especificações, sendo que para tal possui as seguintes características:
+O chip presente no Cartão de Cidadão tem de obedecer a inúmeras especificações, sendo que para tal possui as seguintes caraterísticas:
 
 \begin{enumerate}
     \item Possui uma memória \gls{eeprom} com 64Kb de memória ou superior.
@@ -1133,19 +1133,19 @@ A essência do \gls{jwt} assenta no facto do token ser ou não válido, ou seja,
 
 Estes cuidados ajudam a evitar problemas, tais como ataques à \gls{api} através de sucessivas chamadas num curto espaço de tempo, o que provoca uma sobrecarga no sistema.
 
-\subsection{Introdução ao JSON Web Token}
+% \subsection{Introdução ao JSON Web Token}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.75\textwidth]{img/jwt/jwtlogo.png}
-    \caption{Logótipo do \emph{JSON Web Token}. \cite{jwtLogo}}
-\end{figure}
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.75\textwidth]{img/jwt/jwtlogo.png}
+%     \caption{Logótipo do \emph{JSON Web Token}. \cite{jwtLogo}}
+% \end{figure}
 
-Mas o que define um \gls{jwt}? Um \gls{jwt} é nada mais que um \emph{standard RFC 7519}\cite{jones2015json}\cite{peyrott2016jwt}\footnote{Mais informação em \url{https://tools.ietf.org/html/rfc7519}} desenvolvido para a troca de pedidos em ambientes cujo espaço é limitado. 
+Um token \gls{jwt} pode ser definido como um \emph{standard RFC 7519}\cite{jones2015json}\cite{peyrott2016jwt}\footnote{Mais informação em \url{https://tools.ietf.org/html/rfc7519}} desenvolvido para a troca de pedidos em ambientes cujo espaço é limitado. 
 
 Atualmente, este é utilizado nos frameworks web mais populares, devido ao seu tamanho compacto, simplicidade e usabilidade, tornando-o no perfeito candidato para diversas aplicações.
 
-\cleardoublepage
+%\cleardoublepage
 \subsection{Funcionamento do JSON Web Token}
 
 Um \emph{JSON Web token} é composto por 3 elementos distintos (quebras de linha inseridas para melhorar a leitura), separados por um ponto (\textbf{ . }) entre cada elemento:
@@ -1179,7 +1179,6 @@ Embora seja impossível retirar alguma informação útil do \emph{token} exempl
         \textbf{\emph{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9}}
     \end{center}
     
-    \newpage
     \item Payload (representado a verde).
     \begin{verbatim}
     {
@@ -1203,7 +1202,7 @@ Embora seja impossível retirar alguma informação útil do \emph{token} exempl
         \textbf{\emph{eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik\\9jdMOhdmlvIE1haWEiLCJudW1BbHVubyI6NzEzNjl9}}
     \end{center}
     
-    \newpage
+    %\newpage
     \item Assinatura (representado a azul).
     \begin{verbatim}
     HMACSHA256(
@@ -1228,5 +1227,8 @@ Embora seja impossível retirar alguma informação útil do \emph{token} exempl
     \end{center}
 \end{itemize}
 
-%\cleardoublepage
-%\subsection{Vulnerabilidades do JSON Web Token}
+\section{Síntese}
+
+Neste capítulo foi explorado o estado da arte atual, sendo o foco principal a vertente da autenticação da plataforma \gls{clav}, sendo o foco a autenticação através de Cartão de Cidadão utilizando o Autenticação.Gov, bem como a autenticação local através de username e password e a gestão dos utilizadores.
+
+No próximo capítulo será descrita a solução proposta para os problemas apresentados neste capítulo, através de diagramas de fluxo e especificação técnica da mesma. 
