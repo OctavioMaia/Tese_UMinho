@@ -40,7 +40,7 @@ Embora cálculos mais rápidos levem ao desenvolvimento de algoritmos mais efici
 Outro problema assenta no facto que qualquer função responsável por \emph{hashing}, para o mesmo texto, retorna sempre o mesmo resultado de \emph{hash}, como podemos verificar na tabela \ref{tab:sha1}.
 
 \begin{center}
-    \begin{tabular}{ |p{2cm}|p{2cm}|p{8cm}|  }
+    \begin{tabular}{ |p{2cm}|p{2.5cm}|p{8.5cm}|  }
         \hline
         \multicolumn{3}{|c|}{Resultados do algoritmo SHA-1} \\
         \hline
@@ -76,9 +76,9 @@ De modo a solucionar o problema proveniente de ataques \emph{bruteforce} baseado
 De acordo com a \gls{owasp}, o \emph{salt} é um valor aleatório de tamanho fixo, considerado criptograficamente forte, que é adicionado ao input de uma dada função de \emph{hash}, independentemente deste do input ser ou não único.
 
 Na tabela \ref{tab:sha1_salt} podemos verificar a importância de utilizar a técnica de \emph{salting} juntamente com o \emph{hashing} de passwords.
-
+\vspace{-3mm}
 \begin{center}
-    \begin{tabular}{ |p{1.7cm}|p{2cm}|p{1.5cm}|p{8cm}|  }
+    \begin{tabular}{ |p{1.7cm}|p{2.2cm}|p{1.5cm}|p{8.5cm}|  }
         \hline
         \multicolumn{4}{|c|}{Resultados do algoritmo SHA-1 c/ salting} \\
         \hline
@@ -93,7 +93,7 @@ Na tabela \ref{tab:sha1_salt} podemos verificar a importância de utilizar a té
     \end{tabular}
 \captionof{table}{Aplicação do algoritmo \emph{SHA-1} com auxílio de \emph{salting} a um conjunto de passwords.}\label{tab:sha1_salt} 
 \end{center}
-
+\vspace{-2mm}
 Como exemplificado na Tabela \ref{tab:sha1_salt}, embora o utilizador \textbf{António} e \textbf{Gustavo} partilhem a mesma password, o resultado do \emph{hashing} é diferente.
 
 Facilmente chegamos à conclusão que o \emph{salting} é essencial para manter a segurança de informação importante como passwords, pois um conjunto infinito de passwords idênticas nunca terão o mesmo \emph{hash}.
@@ -188,7 +188,7 @@ As principais funcionalidades do Autenticação.Gov são as seguintes:
     Sendo o cidadão parte ativa na transmissão de atributos à entidade que o solicita, este tem de dar a sua explícita permissão, podendo negar acesso a certos atributos opcionais, ou até proceder ao cancelamento do processo de autenticação corrente.
 \end{enumerate}
 
-%\cleardoublepage
+\cleardoublepage
 \subsection{Workflow do Autenticação.Gov}
 
 O workflow do processo de autenticação com o Autenticação.Gov cinge-se a dois possíveis cenários:
@@ -213,6 +213,7 @@ De acordo com o manual de Integração do Autenticação.Gov\cite{manualAuthGov}
     \label{workflow}
 \end{figure}
 
+\vspace{-3mm}
 \begin{enumerate}
     \item O utilizador pretende aceder à área privada do portal de uma entidade, na qual é necessário que comprove a sua identidade (neste caso a plataforma \gls{clav}).
     \item O portal da entidade delega a autenticação e redireciona o utilizador para o Auten-ticação.Gov, juntamente com um pedido de autenticação assinado digitalmente.
@@ -224,7 +225,6 @@ De acordo com o manual de Integração do Autenticação.Gov\cite{manualAuthGov}
     \item A identificação e atributos do utilizador são autenticadas e assinados digitalmente pelo Autenticação.Gov, após o que redirecciona o utilizador de volta ao portal da entidade original. Cabe à entidade a validação das credenciais do Autenticação.Gov e utilização dos atributos do cidadão.
 \end{enumerate}
 
-%\cleardoublepage
 \subsubsection{Renovação de autenticação} \label{renovacaoAuth}
 
 Além das etapas numeradas entre \textbf{1} e \textbf{4} da figura \ref{workflow}, existe a possibilidade de o utilizador já ter sessão iniciada noutro portal da \gls{ap}, como por exemplo, a Segurança Social Direta\footnote{Mais informações em \url{https://app.seg-social.pt/ptss/}}.
@@ -235,7 +235,7 @@ Esta capacidade de re-autenticação sem nova inserção do PIN de autenticaçã
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.85\textwidth]{img/authgov/workflow2.png}
+    \includegraphics[width=0.75\textwidth]{img/authgov/workflow2.png}
     \caption{Workflow de re-autenticação via Cartão de Cidadão\cite{manualAuthGov}.}
     \label{workflow2}
 \end{figure}
@@ -254,7 +254,7 @@ Esta capacidade de re-autenticação sem nova inserção do PIN de autenticaçã
 
 Através desta implementação de renovação de autenticação, é assegurada a correta imple-mentação de um serviço \gls{sso}, referida na secção \ref{infoAuthGov}.
 
-\cleardoublepage
+
 \subsection{Funcionamento do Autenticação.Gov} \label{funcAuthGov}
 
 De modo a utilizar o Autenticação.Gov é necessária a criação de um pedido baseado em \gls{saml}, assinado digitalmente com um certificado X.509 e encriptado com a nossa chave \gls{rsa} privada, bem como a respetiva cadeia de autenticação.
@@ -273,6 +273,7 @@ Existem dois tipos de pedidos \gls{saml} utilizados pelo Autenticação.Gov:
     Na resposta são enviados os dados previamente requisitados, bem como resposta de sucesso, insucesso ou cancelamento do pedido de autenticação por parte do utilizador.
 \end{itemize}
 
+\vspace{-3mm}
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{img/saml/clavflow.png}
@@ -324,9 +325,9 @@ Contidos dentro do \emph{AuthnRequest} está o elemnto \emph{Issuer}, o elemento
 </AuthnRequest>
 \end{lstlisting}
 
-\vspace{-7mm}
+\vspace{-13mm}
 O elemento de raiz, \emph{AuthnRequest}, contém os seguintes atributos, sendo estes de caráter obrigatório para a correta criação de um pedido de autenticação \gls{saml}.
-
+\vspace{-3mm}
 \begin{itemize}
     \item \textbf{ID}
     
@@ -374,6 +375,7 @@ O elemento de raiz, \emph{AuthnRequest}, contém os seguintes atributos, sendo e
 
 Como foi referido no inicio desta secção, um pedido de autenticação \emph{(AuthnRequest)} é composto por 3 elementos, todas incorporadas dentro de um \emph{AuthnRequest}:
 
+\vspace{-2mm}
 \begin{enumerate}
     \item \textbf{Issuer}
     
@@ -393,7 +395,7 @@ Como foi referido no inicio desta secção, um pedido de autenticação \emph{(A
 </Issuer>
     \end{lstlisting}
     
-    \vspace{-10mm}
+    \vspace{-14mm}
     \item \textbf{Signature}
     
     Neste elemento é realizada a assinatura digital do pedido \gls{saml}, através de métodos de canonização e transformação especificados no manual de integração\cite{manualAuthGov}.
@@ -441,15 +443,15 @@ Como foi referido no inicio desta secção, um pedido de autenticação \emph{(A
 </Signature>
     \end{lstlisting}
     
-    \vspace{-10mm}
+    \vspace{-13mm}
     \item \textbf{Extensions}
     
     Este elemento contém os atributos que vamos requisitar ao Autenticação.Gov, aquando da autenticação de um utilizador na plataforma \gls{clav}. 
     
     Neste caso o seu \gls{nic} e Nome Completo, sendo os atributos requisitados de caráter obrigatório devido ao atributo \emph{isRequired} ser \emph{true}.
     
+    \vspace{-2mm}
     \begin{lstlisting}
-    
 <Extensions>
     <fa:RequestedAttributes xmlns:fa="http://autenticacao.cartaodecidadao.pt/atributos">
         <fa:RequestedAttribute 
@@ -465,7 +467,6 @@ Como foi referido no inicio desta secção, um pedido de autenticação \emph{(A
     \end{lstlisting}
 \end{enumerate}
 
-\cleardoublepage
 \subsubsection{AuthnResponse}
 
 Após a recepção de um pedido \emph{AuthnRequest}, o Autenticação.Gov processa a autenticação do utilizador e retorna um par de estados como resposta.
@@ -484,7 +485,6 @@ Outras parecenças com o pedido de autenticação incluem o facto de também pos
 }
 \begin{lstlisting}
 <Response 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
     ID="_3305700e-0ade-44b1-b81f-a10a5841d56b" 
     InResponseTo="_63f47093-6377-4771-a36e-8bc506cf9e64" 
@@ -514,7 +514,7 @@ Outras parecenças com o pedido de autenticação incluem o facto de também pos
 </Response>
 \end{lstlisting}
 
-\vspace{-7mm}
+\vspace{-15mm}
 O elemento de raiz, \emph{Response}, contém os seguintes atributos, sendo estes de caráter obrigatório numa resposta a um pedido de autenticação \gls{saml}.
 
 \begin{itemize}
@@ -708,15 +708,16 @@ Como foi referido no inicio desta secção, uma resposta a um pedido de autentic
 </Assertion>
     \end{lstlisting}
     
-    \vspace{-10mm}
+    \vspace{-15mm}
     A asserção apenas pode conter um elemento \emph{AttributeStatement}, sendo que este é povoado com os atributos requisitados no pedido de autenticação \emph{AuthnRequest} especificado na secção \ref{authnRequestSection}.
     
     Neste caso, foi requisitado o valor do Número de Identificação Cívil (\textbf{12345678}) e o Nome Completo do cidadão (\textbf{OCTAVIO JOSE AZEVEDO MAIA}).
 \end{enumerate}
 
-\cleardoublepage
+\vspace{-6mm}
 \subsection{Especificação do Autenticação.Gov} \label{especificacaoAuthGov}
 
+\vspace{-2mm}
 Após ter sido explorado na secção \ref{funcAuthGov} o funcionamento do Autenticação.Gov, nesta secção iremos explicar os diversos métodos que permitem a correta criação dos pedidos de autenticação em formato \gls{saml}, quer seja por auxílio a métodos de encriptação, assinatura ou comunicação.
 
 \begin{enumerate}
@@ -730,12 +731,13 @@ Após ter sido explorado na secção \ref{funcAuthGov} o funcionamento do Autent
     
     A comunicação entre o Autenticação.Gov e a plataforma \gls{clav} é efetuada sobre \gls{https} em canal cifrado – \gls{ssl} ou \gls{tls}.
     
-    \begin{figure}[h]
+    \begin{figure}[ht!]
         \centering
-        \includegraphics[width=\textwidth]{img/saml/pedido.png}
+        \includegraphics[width=0.9\textwidth]{img/saml/pedido.png}
         \caption{Comunicação entre o Autenticação e o Fornecedor de Serviços (plataforma \gls{clav})}.
     \end{figure}
   
+  \cleardoublepage
     O Autenticação.Gov responde à plataforma \gls{clav} com informação autorizada pelo utilizador. A resposta inclui os atributos solicitados no pedido de autenticação. Esta ligação é também efetuada sobre HTTP em canal cifrado – cifrado – \gls{ssl} ou \gls{tls}.
     
     A utilização de canais cifrados, associado ao formato específico \gls{saml} garante que a troca de dados segue as seguintes considerações:
@@ -1040,10 +1042,38 @@ pAR+Z3kctgfUVHton0cwJQ==
 -----END CERTIFICATE-----
 \end{verbatim}
 
+\subsection{Vulnerabilidades do Autenticação.Gov}
+
+Durante o desenvolvimento desta dissertação foram encontradas algumas incongruências na especificação do Autenticação.Gov, sendo que duas delas podem ser classificadas como vulnerabilidades graves:
+
+\begin{enumerate}
+    \item \textbf{Assinatura no pedido \emph{AuthnRequest}}
+    
+    Na página 48 do manual de integração do Autenticação.Gov\cite{manualAuthGov}, é referido que a assinatura do pedido de autenticação deverá usar o algoritmo \emph{SHA-1} como digest.
+    
+    A utilização de tal algoritmo é desaconselhada, visto este ser considerado como \emph{deprecrated}\footnote{Para mais informações aceder ao URL seguinte:  \url{https://csrc.nist.gov/Projects/Hash-Functions/NIST-Policy-on-Hash-Functions}}. Este apenas deve ser utilizado para verificação de \emph{time-stamps}, geração de \gls{hmac} entre outros usos extremamente limitados.
+    
+    É importante referir que qualquer tentativa de utilizar outra função para digest, tal como \emph{SHA-256}, \emph{SHA-512}, entre outras, resulta na criação de um pedido \gls{saml} correto, mas rejeitado pelo Autenticação.Gov. Podemos assim concluir que a atual implementação do Autenticação.Gov apenas permite a utilização de \emph{SHA-1}.
+    
+    Para tal, é recomendada a mudança imediata do algoritmo utilizado para o digest para algo mais seguro, tal como as funções da família \emph{SHA-2}, por exemplo, \emph{SHA-256}.
+    
+    \item \textbf{Certificados para encriptação do tráfego}
+    
+    Na página 52 do manual de integração do Autenticação.Gov\cite{manualAuthGov}, é referido que as comunicações entre o utilizador e o Autenticação.Gov deverão ser cifradas através da utilização de \emph{SSLv3} (ou superior), ou \emph{TLS 1.0} (ou superior).
+    
+    Como acontece com o algoritmo de encriptação, a utilização de \emph{SSLv3} é desaconselhada, visto este ser considerado como \emph{deprecated}\footnote{Para mais informações aceder ao URL seguinte:  \url{https://tools.ietf.org/html/rfc7568}}.
+    
+    É de referir que nesta dissertação foi utilizado um certificado \emph{SSLv3} devido à facilidade de obtenção do mesmo, sendo que a alteração para \emph{TLS} pode ser feita através da obtenção de um novo certificado, não sendo necessária qualquer reestruturação da solução já implementada.
+    
+    Em suma, é recomendado a criação de um período de transição, no qual os utilizadores do Autenticação.Gov possam alterar o certificado utilizado para uma vertente do \emph{TLS}, como por exemplo, o \emph{TLS 1.2}\footnote{Para mais informações aceder ao URL seguinte: \url{https://tools.ietf.org/html/rfc5246}}.
+\end{enumerate}
+
+É importante salientar que no manual de implementação do Autenticação.Gov é possível encontrar incongruências que prejudicam o desenvolvimento de uma implementação de autenticação. Para tal, é aconselhada uma revisão ao documento, sendo que nesta se devem refletir os dois pontos previamente descritos, de modo a garantir uma maior segurança e fiabilidade da plataforma Autenticação.Gov.
+
 \newpage
 \section{Cartão de Cidadão}
 
-O Cartão de CIdadão (\gls{cc}) é um documento de identificação da cidadina portuguesa, desenvolvido durante o governo de José Sócrates\footnote{Mais informação em \url{https://pt.wikipedia.org/wiki/Cartão_de_cidadão}.}, tendo a primeira emissão do mesmo ocorrido em 2006/2007 numa fase experimental na Região Autónoma dos Açores, seguido da emissão a nível nacional em 2008.
+O Cartão de Cidadão (\gls{cc}) é um documento de identificação da cidadania portuguesa, desenvolvido durante o governo de José Sócrates\footnote{Mais informação em \url{https://pt.wikipedia.org/wiki/Cartão_de_cidadão}.}, tendo a primeira emissão do mesmo ocorrido em 2006/2007 numa fase experimental na Região Autónoma dos Açores, seguido da emissão a nível nacional em 2008.
 
 \begin{figure}[h]
     \centering

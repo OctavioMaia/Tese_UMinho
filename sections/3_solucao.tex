@@ -2,11 +2,11 @@
 \chapter{Solução} \label{capituloSolucoes}
 
 Neste capítulo iremos explorar a solução encontrada para os vários desafios e necessidades encontradas ao longo desta dissertação.
-
+\vspace{-4mm}
 \section{Autenticação local}
-
+\vspace{-4mm}
 \subsection{Especificação} \label{especificacaoAuthLocal}
-
+\vspace{-3mm}
 De modo a satisfazer as necessidades da autenticação local de utilizadores, através de username e password, foi decidida a implementação de uma base de dados em \emph{MongoDB}.
 
 A criação de um utilizador na plataforma \gls{clav} obriga ao preenchimento dos seguintes dados:
@@ -39,14 +39,15 @@ A criação de um utilizador na plataforma \gls{clav} obriga ao preenchimento do
     
         Qualquer combinação de números e letras.
 \end{enumerate}
-
+\vspace{-1mm}
 Além da obrigatoriedade dos dados prévios, foi também decidido que todos os dados relativos aos utilizadores iriam ser guardados numa coleção MongoDB com o nome "\emph{users}".
 
+\vspace{-6mm}
 \subsection{Workflow da autenticação}
-\vspace{-5mm}
-\begin{figure}[h]
+\vspace{-9mm}
+\begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/diagramas/authlocal/AuthLocal.png}
+    \includegraphics[width=0.65\textwidth]{img/diagramas/authlocal/AuthLocal.png}
     \caption{Workflow da autenticação local.}
     \label{fig:flow_authlocal}
 \end{figure}
@@ -167,10 +168,8 @@ Além das funcionalidades previamente descritas, este painel de gestão terá de
 \section{Métrica da plataforma} \label{solucaoMetrica}
 \vspace{-4mm}
 \subsection{Especificação}
-\vspace{-3mm}
-Além das medidas especificadas na secção \ref{protecaoAPI}, foi sugerida a criação de uma página capaz de identificar a quantidade de pedidos processados pela plataforma \gls{clav}.
-
-Para tal, é necessário distinguir entre os possíveis tipo de pedidos existentes na API de dados: 
+\vspace{-4mm}
+Além das medidas especificadas na secção \ref{protecaoAPI}, foi sugerida a criação de uma página capaz de identificar a quantidade de pedidos processados pela plataforma \gls{clav}. Para tal, é necessário distinguir entre os possíveis tipo de pedidos existentes na API de dados: 
 \vspace{-3mm}
 \begin{itemize}
     \item \textbf{GET}.
@@ -189,14 +188,15 @@ Este recolher de dados permite também evitar utilizações indevidas da API de 
 
 \vspace{-6mm}
 \subsection{Workflow da incrementação da métrica na plataforma}
-\vspace{-5mm}
-\begin{figure}[h!]
+\vspace{-10mm}
+\begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.46\textwidth]{img/diagramas/gestaometrica/Metrica.png}
+    \includegraphics[width=0.41\textwidth]{img/diagramas/gestaometrica/Metrica.png}
     \caption{Workflow da incrementação de métrica na plataforma \gls{clav}.}
     \label{fig:flow_Metrica}
 \end{figure}
 
+\cleardoublepage
 \section{Síntese}
 
 Uma das principais necessidades desta dissertação recaiu na documentação de todo o processo de desenvolvimento. 

@@ -160,7 +160,7 @@ De modo a exemplificar a importância do fator de custo, vamos imaginar o seguin
 Quanto tempo demoraria a um atacante, com um processador idêntico ao descrito anteriormente, testar todas as passwords para os 1000 utilizadores?
 
 \begin{center}
-    \begin{tabular}{ |p{2.5cm}|p{3cm}|p{3cm}|p{3cm}|  }
+    \begin{tabular}{ |p{3.2cm}|p{3cm}|p{3cm}|p{3.2cm}|  }
         \hline
         \multicolumn{4}{|c|}{Tempo necessário para testar todas as passwords para os 1000 utilizadores.} \\
         \hline
@@ -195,7 +195,7 @@ Um \gls{fpga} é um circuito integrado que tem a possibilidade de ser reprograma
 Na tabela \ref{tab:bcrypt_hashrate} exploramos a performance em hashes por segundo (H/s) entre \gls{cpu}\footnote{\gls{cpu} fabricado pela Intel, desenvolvido na arquitetura \emph{Sandy Bridge}.}, \gls{gpu}\footnote{\gls{gpu} fabricada pela NVIDIA, desenvolvida na arquitetura \emph{Maxwell}.} e \gls{fpga}\footnote{Ambos os \gls{fpga} utilizados para comparação são desenvolvidos pela Xilinx.} relativamente ao algoritmo \emph{bcrypt}.
 
 \begin{center}
-    \begin{tabular}{ |p{1cm}|p{2.5cm}|p{2cm}|p{2cm}|p{1.75cm}|p{0.9cm}|  }
+    \begin{tabular}{ |p{1cm}|p{3.5cm}|p{2cm}|p{2cm}|p{1.75cm}|p{0.9cm}|  }
         \hline
         \multicolumn{6}{|c|}{Cálculo de hashes por segundo (H/s) em diverso hardware.} \\
         \hline
@@ -329,10 +329,11 @@ Tendo em consideração a página de registo local, foi implementada uma soluç�
     \label{fig:paginaLoginLocal}
 \end{figure}
 
+\vspace{-5mm}
 Após submeter o pedido de login pode ocorrer um dos seguintes cenários:
 
 \begin{itemize}
-    \vspace{-2mm}
+    \vspace{-3mm}
     \item \textbf{Sucesso}
     
     Ocorre quando o utilizador fornece uma combinação de email e password correta.
@@ -397,13 +398,13 @@ Caso o utilizador se esqueça das suas credenciais, existe uma página de recupe
 \vspace{-3mm}
 Após inserção do email e subsequente pedido de recuperação de credenciais, pode ocorrer um dos seguintes cenários:
 
-\vspace{-4mm}
+\vspace{-3mm}
 \begin{itemize}
     \item \textbf{Sucesso}
+    \vspace{-2mm}
     
     Ocorre quando o utilizador fornece um email presente em base de dados.
-    
-    \vspace{-4mm}
+    \vspace{-3mm}
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.9\textwidth]{img/clav/recuperacao/recuperacaoEnviado.png}
@@ -431,9 +432,10 @@ Após inserção do email e subsequente pedido de recuperação de credenciais, 
     
     \cleardoublepage
     \item \textbf{Insucesso}
-    
+    \vspace{-1mm}
     \begin{itemize}
         \item \textbf{Dados incorretos}
+        \vspace{-1mm}
         
         Ocorre quando o utilizador insere um email que não se encontra presente em base de dados.
         
@@ -556,7 +558,7 @@ O comportamento da função de registo e login via Cartão de Cidadão pode ser 
 
 \cleardoublepage
 \section{Gestão de utilizadores}
-
+\vspace{-3mm}
 Com o previsto aumento exponencial do número de utilizadores da plataforma \gls{clav}, foi necessário proceder à implementação de um mecanismo capaz e gerir, editar e possivelmente desativar certos utilizadores. Para tal, foi desenvolvida a seguinte página, de acordo com as especificações documentadas na secção \ref{gestaoUtilizadoresSolucao}.
 \vspace{-3mm}
 \begin{figure}[H]
@@ -568,7 +570,7 @@ Com o previsto aumento exponencial do número de utilizadores da plataforma \gls
 
 \vspace{-5mm}
 Após listar todos os utilizadores é possivel ordenar através de nome, entidade, email ou nível de utilizador, bem como editar o utilizador correspondente através do icone da direita (representado por um lápis).
-\vspace{-3mm}
+\vspace{-4mm}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.875\textwidth]{img/clav/gestao/edicao.png}
@@ -686,6 +688,7 @@ Um possível problema desta solução seria que iríamos delegar o armazenamento
 
 Para atingir este objetivo, apenas é necessário adicionar os campos abaixo mencionados à sessão do \emph{ExpressJS}.
 
+\vspace{-3mm}
 \begin{verbatim}
     app.use(session({
         ...
@@ -697,12 +700,11 @@ Para atingir este objetivo, apenas é necessário adicionar os campos abaixo men
         })
     }));
 \end{verbatim}
-
+\vspace{-2mm}
 Esta configuração do módulo \emph{\textbf{connect-mongo}} faz com que a cada 15 minutos seja invocada a função de remoção de sessões expiradas, sendo que cada sessão apenas é válida durante 1800 segundos, ou seja, 30 minutos.
 
 Em suma, o armazenamento de sessões em base de dados possui todas as qualidades da validação via \emph{JSON Web Token}, oferecendo uma maior flexibilidade e parametrização, sem impacto na performance do servidor.
 
-\cleardoublepage
 \subsubsection{Nova técnica de validação através de JSON Web Token} \label{jwt_2}
 
 Devido à separação do frontend e backend em aplicações distintas, explicada na secção \ref{implementacao}, a existência de uma sessão em base de dados deixa de ser possível. Isto deve-se ao facto do utilizador ter de iniciar sessão no servidor responsável pelo frontend da aplicação, sendo os dados introduzidos enviados para o backend, seguido da resposta do mesmo para o frontend (explicado na figura \ref{fig:diagramaLogin}).
@@ -845,6 +847,7 @@ De modo a renovar a chave API apenas é necessário introduzir o email utilizado
 \end{itemize}
 
 \cleardoublepage
+\vspace{-2mm}
 O comportamento da função de registo da chave API pode ser exemplificado pelo seguinte diagrama de sequência:
 
 \begin{figure}[H]
@@ -853,7 +856,7 @@ O comportamento da função de registo da chave API pode ser exemplificado pelo 
     \caption{Diagrama de sequência relativo ao processo de registo de uma chave API na plataforma \gls{clav}.}
     \label{fig:diagramaSequenciaRegistoAPI}
 \end{figure}
-\vspace{-5mm}
+\vspace{-6mm}
 O comportamento da função de renovação da chave API pode ser exemplificado pelo seguinte diagrama de sequência:
 \vspace{-2mm}
 \begin{figure}[H]
@@ -865,7 +868,7 @@ O comportamento da função de renovação da chave API pode ser exemplificado p
 
 \cleardoublepage
 \section{Gestão de chaves API}
-
+\vspace{-4mm}
 Devido ao elevado número de chaves API que irão ser emitidas pela plataforma \gls{clav} (explicado na secção \ref{autenticaoPedidos}), foi necessária proceder à criação de uma página capaz de gerir as chaves emitidas.
 
 Para tal foi desenvolvida a seguinte página de gestão, onde é possível ver todas as chaves emitidas, sendo possível ordenar por chave, nome da entidade que requisitou a chave, entidade, contato, bem como o estado da chave e as suas datas de criação e expiração.
@@ -876,16 +879,16 @@ Para tal foi desenvolvida a seguinte página de gestão, onde é possível ver t
     \caption{Página de listagem de todas as chaves API emitidas pela plataforma \gls{clav}.}
     \label{fig:listagemChavesAPI}
 \end{figure}
-
+\vspace{-1mm}
 Além de listar as chaves, é necessário fornecer mecanismos capazes de editar a informação nela contida, nomeadamente o nome, entidade e contato de quem a requisitou. Além destes mecanismos de edição é necessário fornecer as seguintes funcionalidades:
 
 \begin{itemize}
     \item \textbf{Desativar chave API}
-    
+    \vspace{-1mm}
     A opção de desativar uma chave API é necessária devido a possíveis usos incorretos da mesma. Caso um utilizador seja suspeito de usar a chave de forma incorreta, esta poderá ser desativada para investigação, não podendo ser utilizada para pedidos à API até ser reativada.
     
     \item \textbf{Eliminar chave API}
-    
+    \vspace{-1mm}
     Caso se comprove que uma chave está de facto a ser utilizada de forma indevida, esta pode ser permanentemente eliminada da plataforma \gls{clav}.
 \end{itemize}
 
@@ -896,9 +899,9 @@ Além de listar as chaves, é necessário fornecer mecanismos capazes de editar 
     \label{fig:edicaoChavesAPI}
 \end{figure}
 
-\vspace{-5mm}
+\vspace{-3mm}
 O comportamento da função de listagem e edição de chaves API pode ser exemplificado pelo seguinte diagrama de sequência:
-\vspace{-2mm}
+\vspace{-1mm}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{img/diagramas/sequencia/DiagramasSequencia-GestaoAPI.png}
@@ -949,11 +952,11 @@ O comportamento desta função de middleware pode ser descrita através do diagr
 
 \cleardoublepage
 \section{Métrica da plataforma CLAV}
-
+\vspace{-3mm}
 Como foi especificado na secção \ref{solucaoMetrica}, foi implementado um mecanismo capaz de reconhecer e processar os dados provenientes da utilização da API de dados.
 
 Para tal, foi criada uma coleção em \emph{MongoDB} contendo as diversas rotas API da plataforma \gls{clav}, como por exemplo:
-
+\vspace{-1mm}
 \begin{itemize}
     \item \textbf{/api/users}
     \item \textbf{/api/tipologias}
@@ -961,7 +964,7 @@ Para tal, foi criada uma coleção em \emph{MongoDB} contendo as diversas rotas 
     \item \textbf{/api/chaves}
     \item etc.
 \end{itemize}
-
+\vspace{-2mm}
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{img/clav/metrica/metrica.png}
@@ -970,7 +973,7 @@ Para tal, foi criada uma coleção em \emph{MongoDB} contendo as diversas rotas 
 \end{figure}
 
 Cada uma destas rotas tem associado três contadores identificados de seguida:
-
+\vspace{-1mm}
 \begin{enumerate}
     \item \textbf{nCallsGet}
     
