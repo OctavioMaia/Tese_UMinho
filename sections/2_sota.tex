@@ -469,7 +469,7 @@ Como foi referido no inicio desta secção, um pedido de autenticação \emph{(A
 
 \subsubsection{AuthnResponse}
 
-Após a recepção de um pedido \emph{AuthnRequest}, o Autenticação.Gov processa a autenticação do utilizador e retorna um par de estados como resposta.
+Após a recepção de um pedido \emph{AuthnRequest}, o Autenticação.Gov processa a autenticação do utilizador e retorna o seguinte pedido como resposta.
 
 Tal como o pedido de autenticação \emph{AuthnRequest} explorado na secção \ref{authnRequestSection}, este é escrito na linguagem \gls{saml}.
 
@@ -1042,16 +1042,15 @@ pAR+Z3kctgfUVHton0cwJQ==
 -----END CERTIFICATE-----
 \end{verbatim}
 
-\subsection{Vulnerabilidades do Autenticação.Gov}
+\vspace{-3mm}
+\subsection{Incongruências no Autenticação.Gov}
 
-Durante o desenvolvimento desta dissertação foram encontradas algumas incongruências na especificação do Autenticação.Gov, sendo que duas delas podem ser classificadas como vulnerabilidades graves:
+Durante o desenvolvimento desta dissertação foram encontradas algumas incongruências na especificação do Autenticação.Gov:
 
 \begin{enumerate}
     \item \textbf{Assinatura no pedido \emph{AuthnRequest}}
     
-    Na página 48 do manual de integração do Autenticação.Gov\cite{manualAuthGov}, é referido que a assinatura do pedido de autenticação deverá usar o algoritmo \emph{SHA-1} como digest.
-    
-    A utilização de tal algoritmo é desaconselhada, visto este ser considerado como \emph{deprecrated}\footnote{Para mais informações aceder ao URL seguinte:  \url{https://csrc.nist.gov/Projects/Hash-Functions/NIST-Policy-on-Hash-Functions}}. Este apenas deve ser utilizado para verificação de \emph{time-stamps}, geração de \gls{hmac} entre outros usos extremamente limitados.
+    Na página 48 do manual de integração do Autenticação.Gov\cite{manualAuthGov}, é referido que a assinatura do pedido de autenticação deverá usar o algoritmo \emph{SHA-1} como digest. A utilização de tal algoritmo é desaconselhada, visto este ser considerado como \emph{deprecrated}\footnote{Para mais informações aceder ao URL seguinte:  \url{https://csrc.nist.gov/Projects/Hash-Functions/NIST-Policy-on-Hash-Functions}}. Este apenas deve ser utilizado para verificação de \emph{time-stamps}, geração de \gls{hmac} entre outros usos extremamente limitados.
     
     É importante referir que qualquer tentativa de utilizar outra função para digest, tal como \emph{SHA-256}, \emph{SHA-512}, entre outras, resulta na criação de um pedido \gls{saml} correto, mas rejeitado pelo Autenticação.Gov. Podemos assim concluir que a atual implementação do Autenticação.Gov apenas permite a utilização de \emph{SHA-1}.
     
@@ -1061,19 +1060,27 @@ Durante o desenvolvimento desta dissertação foram encontradas algumas incongru
     
     Na página 52 do manual de integração do Autenticação.Gov\cite{manualAuthGov}, é referido que as comunicações entre o utilizador e o Autenticação.Gov deverão ser cifradas através da utilização de \emph{SSLv3} (ou superior), ou \emph{TLS 1.0} (ou superior).
     
-    Como acontece com o algoritmo de encriptação, a utilização de \emph{SSLv3} é desaconselhada, visto este ser considerado como \emph{deprecated}\footnote{Para mais informações aceder ao URL seguinte:  \url{https://tools.ietf.org/html/rfc7568}}.
+    Como acontece com o algoritmo de encriptação, a utilização de \emph{SSLv3} é desaconselhada, visto este ser considerado como \emph{deprecated}\footnote{Para mais informações aceder ao URL seguinte:  \url{https://tools.ietf.org/html/rfc7568}}. É importante referir que nesta dissertação foi utilizado um certificado \emph{SSLv3} devido à facilidade de obtenção do mesmo, sendo que a alteração para \emph{TLS} pode ser feita através da obtenção de um novo certificado, não sendo necessária qualquer reestruturação da solução já implementada.
     
-    É de referir que nesta dissertação foi utilizado um certificado \emph{SSLv3} devido à facilidade de obtenção do mesmo, sendo que a alteração para \emph{TLS} pode ser feita através da obtenção de um novo certificado, não sendo necessária qualquer reestruturação da solução já implementada.
+    Em suma, é recomendado a criação de um período de transição, no qual os utilizadores do Autenticação.Gov possam alterar o certificado utilizado para uma vertente do \emph{TLS}, como por exemplo, o \emph{TLS 1.3}\footnote{Para mais informações aceder ao URL seguinte: \url{https://tools.ietf.org/html/rfc8446}}.
     
-    Em suma, é recomendado a criação de um período de transição, no qual os utilizadores do Autenticação.Gov possam alterar o certificado utilizado para uma vertente do \emph{TLS}, como por exemplo, o \emph{TLS 1.2}\footnote{Para mais informações aceder ao URL seguinte: \url{https://tools.ietf.org/html/rfc5246}}.
+    \item \textbf{Definição de ID nos pedidos}
+    
+    Cada pedido de autenticação \emph{AuthnRequest} possui um identificador único, designaod por \emph{ID}. Este campo é gerado através do \emph{UUID\//v4}, sendo sempre gerados identificadores totalmente aleatórios.
+    
+    Por norma, estes identificadores gerados podem começar com qualquer letra ou número, sendo que durante o desenvolvimento da autenticação com o Cartão de Cidadão, apenas um número pequeno de pedidos de autenticação eram de facto gerados com sucesso. Isto devia-se ao caso de o \emph{ID} ter como primeiro caractere uma letra.
+    
+    Em suma, apenas gerava um pedido correto quando era iniciado por um número. A solução proposta pela \gls{ama} foi preceder todos os identificadores de um "\_", tornando todos os identificadores gerados válidos. 
+    
+    É importante referir que no manual de integração esta solução não está referenciada em nenhum local, sendo aconselhada acrescentar esta mesma informação na próxima versão do mesmo.
 \end{enumerate}
 
-É importante salientar que no manual de implementação do Autenticação.Gov é possível encontrar incongruências que prejudicam o desenvolvimento de uma implementação de autenticação. Para tal, é aconselhada uma revisão ao documento, sendo que nesta se devem refletir os dois pontos previamente descritos, de modo a garantir uma maior segurança e fiabilidade da plataforma Autenticação.Gov.
+Além das incongruências e vulnerabilidades descritas previamente, é possível encontrar exemplos desatualizados, como por exemplo, pedidos de autenticação. Para tal, é aconselhada uma revisão ao documento, sendo que nesta se devem refletir os pontos previamente descritos, de modo a garantir uma maior segurança e fiabilidade da plataforma Autenticação.Gov.
 
 \newpage
 \section{Cartão de Cidadão}
 
-O Cartão de Cidadão (\gls{cc}) é um documento de identificação da cidadania portuguesa, desenvolvido durante o governo de José Sócrates\footnote{Mais informação em \url{https://pt.wikipedia.org/wiki/Cartão_de_cidadão}.}, tendo a primeira emissão do mesmo ocorrido em 2006/2007 numa fase experimental na Região Autónoma dos Açores, seguido da emissão a nível nacional em 2008.
+O Cartão de Cidadão (\gls{cc}) é um documento de identificação da cidadania portuguesa, desenvolvido durante o XVII Governo Constitucional de Portugal\footnote{Mais informação em \url{https://pt.wikipedia.org/wiki/Cartão_de_cidadão}.}, tendo a primeira emissão do mesmo ocorrido em 2006/2007 numa fase experimental na Região Autónoma dos Açores, seguido da emissão a nível nacional em 2008.
 
 \begin{figure}[h]
     \centering
@@ -1173,11 +1180,12 @@ Estes cuidados ajudam a evitar problemas, tais como ataques à \gls{api} atravé
 
 Um token \gls{jwt} pode ser definido como um \emph{standard RFC 7519}\cite{jones2015json}\cite{peyrott2016jwt}\footnote{Mais informação em \url{https://tools.ietf.org/html/rfc7519}} desenvolvido para a troca de pedidos em ambientes cujo espaço é limitado. 
 
-Atualmente, este é utilizado nos frameworks web mais populares, devido ao seu tamanho compacto, simplicidade e usabilidade, tornando-o no perfeito candidato para diversas aplicações.
+%Atualmente, este é utilizado nos frameworks web mais populares, devido ao seu tamanho compacto, simplicidade e usabilidade, tornando-o no perfeito candidato para diversas aplicações.
 
 %\cleardoublepage
+\vspace{-5mm}
 \subsection{Funcionamento do JSON Web Token}
-
+\vspace{-2mm}
 Um \emph{JSON Web token} é composto por 3 elementos distintos (quebras de linha inseridas para melhorar a leitura), separados por um ponto (\textbf{ . }) entre cada elemento:
 
 \begin{center}
@@ -1186,7 +1194,7 @@ Um \emph{JSON Web token} é composto por 3 elementos distintos (quebras de linha
     \textcolor{blue}{SneQiuAGUW9aTpxlNNbMkEoYNj7v4-Sw\_5jl134-hosk}}
 \end{center}
 
-Embora seja impossível retirar alguma informação útil do \emph{token} exemplificado anteriormente, este contem informação extremamente útil, tendo sido gerado através da seguinte informação:
+Embora seja impossível retirar qualquer tipo de informação visível do \emph{token} exemplificado anteriormente, este contem dados extremamente úteis, tendo sido gerado através da seguinte forma:
 
 \begin{itemize}
     \item Header (representado a vermelho).
@@ -1203,7 +1211,7 @@ Embora seja impossível retirar alguma informação útil do \emph{token} exempl
     
     Existem tambem atributos opcionais, tais como \emph{typ}, cuja função é distinguir entre o \gls{jwt} e outros tipos de dados que possam ser transmitidos no mesmo formato\footnote{Tipos de dados transmissíveis: \url{http://www.iana.org/assignments/media-types/media-types.xhtml}}, sendo que neste exemplo é transmitido um \emph{JWT} e \emph{cty}, que apenas é utilizado quando existem aninhamento de \gls{jwt} dentro de outro(s) \gls{jwt}.
     
-    Após o uso do algoritmo \textbf{HS256}, a informação acima representada é transcrita sobre a forma da seguinte string:
+    Após o uso de \emph{Base64URL enconding} sobre o algoritmo \textbf{HS256}, a informação acima representada é transcrita sobre a forma da seguinte string:
     
     \begin{center}
         \textbf{\emph{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9}}
@@ -1242,14 +1250,14 @@ Embora seja impossível retirar alguma informação útil do \emph{token} exempl
     )
     \end{verbatim}
     
-    Embora a definição de \gls{jwt} apenas abranja os dois elementos previamente estudados, o terceiro elemento apenas tem como função a desencriptação do \gls{jwt} para efeitos de \emph{parsing}.
+    Embora a definição de \gls{jwt} apenas abranja os dois elementos previamente estudados, o terceiro elemento tem como função garantir que o \gls{jwt} não foi indevidamente alterado.
     
     Por norma é utilizado uma variante do algoritmo \emph{Base64}, designada por \emph{Base64-URL}. Para encriptar a assinatura, são concatenadas 3 strings que foram sujeitas ao codificação via \emph{Base64-URL}.
     
     \begin{verbatim}
         [Base64-URL header].[Base64-URL payload].[secretKey]
     \end{verbatim}
-    
+    \vspace{-5mm}
     O resultado desta concatenação e posterior encriptação via \textbf{HS256} é a seguinte string:
     
     \begin{center}
@@ -1257,7 +1265,9 @@ Embora seja impossível retirar alguma informação útil do \emph{token} exempl
     \end{center}
 \end{itemize}
 
+\vspace{-8mm}
 \section{Síntese}
+\vspace{-2mm}
 
 Neste capítulo foi explorado o estado da arte atual, sendo o foco principal a vertente da autenticação da plataforma \gls{clav}, sendo o foco a autenticação através de Cartão de Cidadão utilizando o Autenticação.Gov, bem como a autenticação local através de username e password e a gestão dos utilizadores.
 

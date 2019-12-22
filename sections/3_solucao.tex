@@ -114,7 +114,7 @@ Para tal, a solução encontrada foi a implementação de duas funções de midd
         
         \item \textbf{Validade do token}
         
-        Após receção do token, este irá ser descodificado e irá ocorrer a verificação da validade do mesmo, ou seja, se o token é válido e contem o identificador do utilizador que fez o pedido à API.
+        Após receção do token, este irá ser descodificado e irá ocorrer a verificação da validade do mesmo, através da utilização da assinatura, que irá verificar se o mesmo não foi comprometido.
     \end{enumerate}
     
     \item \textbf{Verificação do nível de acesso}
@@ -169,7 +169,7 @@ Além das funcionalidades previamente descritas, este painel de gestão terá de
 \vspace{-4mm}
 \subsection{Especificação}
 \vspace{-4mm}
-Além das medidas especificadas na secção \ref{protecaoAPI}, foi sugerida a criação de uma página capaz de identificar a quantidade de pedidos processados pela plataforma \gls{clav}. Para tal, é necessário distinguir entre os possíveis tipo de pedidos existentes na API de dados: 
+Além das medidas especificadas na secção \ref{protecaoAPI}, foi sugerida a criação de uma página capaz de identificar a quantidade de pedidos processados pela plataforma \gls{clav}. Para tal, é necessário distinguir entre os possíveis tipo de métodos HTTP existentes na API de dados: 
 \vspace{-3mm}
 \begin{itemize}
     \item \textbf{GET}.

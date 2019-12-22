@@ -26,7 +26,6 @@ Esta decisão de separar o frontend e backend cinge o primeiro a um papel de sim
 
 Para obter tais informações, tem de comunicar com o backend, realizando pedidos conforme necessário, processando a resposta dada de modo a interagir com o utilizador. 
 
-\vspace{5mm}
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{img/diagramas/sequencia/DiagramasSequencia.png}
@@ -36,7 +35,7 @@ Para obter tais informações, tem de comunicar com o backend, realizando pedido
 
 Como podemos ver no diagrama de sequência da figura \ref{fig:diagramaPaginaRestrita}, o frontend serve apenas para interação com o utilizador, sendo que grande porção da lógica aplicacional ocorre no backend, que após terminar a query ou pedido em questão, retorna para o frontend mensagens de sucesso, erro, etc.
 
-Toda e qualquer tarefa, quer seja de registo, login, acesso a informação sobre uma entidade, etc, é realizada sobre uma \gls{api} desenvolvida especificamente para o frontend e backend comunicarem entre si de forma independente e totalmente modular, permitindo correr em servidores diferentes.
+Toda e qualquer tarefa, quer seja de registo, login, acesso a informação sobre uma entidade, etc, é realizada sobre uma \gls{api} desenvolvida especificamente para o frontend e backend comunicarem entre si de forma independente e totalmente modular, permitindo correr em servidores diferentes, sendo para tal utilizado o mecanismo \gls{cors}.
 
 \cleardoublepage
 \section{Encriptação de informação sensível} \label{encryption}
@@ -1004,4 +1003,4 @@ Após descrever a solução no capítulo anterior, este foi escrito com a mesma 
 
 Este capítulo descreve também as duas vertentes presentes na plataforma \gls{clav}, o Frontend e o Backend/API de dados, utilizando para tal diversos diagramas de sequência que ilustram toda a interação entre estas duas vertentes em grande detalhe. Além dos diagramas previamente descritos, são também utilizadas diversas imagens da plataforma \gls{clav} após implementação das soluções descritas no capítulo anterior.
 
-Com toda esta extensa documentação, qualquer futura alteração, ou duvida existente sobre a implementação da plataforma \gls{clav} pode ser facilmente solucionada.
+Espera-se que esta documentação permita que qualquer futura alteração, ou duvida existente sobre a implementação da plataforma \gls{clav}, possa ser facilmente solucionada.
